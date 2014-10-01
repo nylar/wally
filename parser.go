@@ -181,20 +181,6 @@ var stopWords = map[string]bool{
 	"yourselves": true,
 }
 
-type Word interface {
-	Stemmer(word string) (string, error)
-	Tokenizer(words []string) ([]string, error)
-	Stopper(word string) string
-}
-
-func Stemmer(word string) (string, error) {
-	return word, nil
-}
-
-func Tokenizer(words []string) ([]string, error) {
-	return words, nil
-}
-
 // Compares a given word to a list of stopper words (words which are common
 // and therefore should be ignored when indexing).
 func Stopper(word string) string {
