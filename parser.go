@@ -181,6 +181,22 @@ var stopWords = map[string]bool{
 	"yourselves": true,
 }
 
+// Given a blob of text, as a string or slice of bytes, split each word separted
+// by whitespace, extra whitespace should be removed, any other type returns
+// an empty string and therefore will not be processed later.
+func SplitTextIntoWords(text interface{}) []string {
+	var words string
+	switch text.(type) {
+	case string:
+		words = text.(string)
+	case []byte:
+		words = string(text.([]byte))
+	default:
+		words = ""
+	}
+	return strings.Fields(words)
+}
+
 // Compares a given word to a list of stopper words (words which are common
 // and therefore should be ignored when indexing).
 func Stopper(word string) string {
