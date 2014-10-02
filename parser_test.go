@@ -2,6 +2,7 @@ package wally
 
 import (
 	"testing"
+	"io/ioutil"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -75,5 +76,29 @@ func TestSplitTextIntoWords(t *testing.T) {
 
 	for _, test := range tests {
 		assert.Equal(t, test.Output, SplitTextIntoWords(test.Input), "Should return a slice of strings.")
+	}
+}
+
+func BenchmarkSplitTextIntoWords(b *testing.B) {
+	file, err := ioutil.ReadFile("test.txt") // 30654 words
+	if err != nil {
+		b.Error("Could not load test data")
+	}
+	
+	for n:= 0; n < b.N; n++ {
+		SplitTextIntoWords(file)
+	}
+}
+
+func BenchmarkSplitTextIntoWords_two(b *testing.B) {
+	file, err := ioutil.ReadFile("test 2.txt") // 1891 words
+	if err != nil {
+		b.Error("Could not load test data")
+	}
+	
+	b.Log(len(file))
+
+	for n:= 0; n < b.N; n++ {
+		SplitTextIntoWords(file)
 	}
 }
