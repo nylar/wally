@@ -199,10 +199,21 @@ func SplitTextIntoWords(text interface{}) []string {
 
 // Compares a given word to a list of stopper words (words which are common
 // and therefore should be ignored when indexing).
-func Stopper(word string) string {
-	word = strings.ToLower(word)
-	if _, ok := stopWords[word]; ok {
-		return ""
+func Stopper(words []string) []string {
+	wordList := []string{}
+
+	for _, word := range words {
+		word = strings.ToLower(word)
+		if _, ok := stopWords[word]; !ok {
+			wordList = append(wordList, word)
+		}
 	}
-	return word
+	
+	return wordList
+}
+
+func Parse(text interface{}) []string {
+	words := SplitTextIntoWords(text)
+	words = Stopper(words)
+	return words
 }
