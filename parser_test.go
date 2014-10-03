@@ -1,8 +1,8 @@
 package wally
 
 import (
-	"testing"
 	"io/ioutil"
+	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -84,8 +84,8 @@ func BenchmarkSplitTextIntoWords(b *testing.B) {
 	if err != nil {
 		b.Error("Could not load test data")
 	}
-	
-	for n:= 0; n < b.N; n++ {
+
+	for n := 0; n < b.N; n++ {
 		SplitTextIntoWords(file)
 	}
 }
@@ -95,10 +95,8 @@ func BenchmarkSplitTextIntoWords_two(b *testing.B) {
 	if err != nil {
 		b.Error("Could not load test data")
 	}
-	
-	b.Log(len(file))
 
-	for n:= 0; n < b.N; n++ {
+	for n := 0; n < b.N; n++ {
 		SplitTextIntoWords(file)
 	}
 }
