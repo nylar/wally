@@ -3,6 +3,7 @@ package wally
 import (
 	"io/ioutil"
 	"testing"
+	"strings"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -80,7 +81,7 @@ func TestSplitTextIntoWords(t *testing.T) {
 }
 
 func BenchmarkSplitTextIntoWords(b *testing.B) {
-	file, err := ioutil.ReadFile("test.txt") // 30654 words
+	file, err := ioutil.ReadFile("test_data/test.txt") // 30654 words
 	if err != nil {
 		b.Error("Could not load test data")
 	}
@@ -91,12 +92,42 @@ func BenchmarkSplitTextIntoWords(b *testing.B) {
 }
 
 func BenchmarkSplitTextIntoWords_two(b *testing.B) {
-	file, err := ioutil.ReadFile("test 2.txt") // 1891 words
+	file, err := ioutil.ReadFile("test_data/test_2.txt") // 1891 words
 	if err != nil {
 		b.Error("Could not load test data")
 	}
 
 	for n := 0; n < b.N; n++ {
 		SplitTextIntoWords(file)
+	}
+}
+
+func BenchmarkStopper(b *testing.B) {
+	file, err := ioutil.ReadFile("test_data/test.txt") // 30654 words
+	if err != nil {
+		b.Error("Could not load test data")
+	}
+	
+	data := strings.Fields(string(file))
+	
+	for n := 0; n < b.N; n++ {
+		for _, word := range data {
+			Stopper(word)
+		}
+	}
+}
+
+func BenchmarkStopper_two(b *testing.B) {
+	file, err := ioutil.ReadFile("test_data/test_2.txt") // 1891 words
+	if err != nil {
+		b.Error("Could not load test data")
+	}
+
+	data := strings.Fields(string(file))
+
+	for n := 0; n < b.N; n++ {
+		for _, word := range data {
+			Stopper(word)
+		}
 	}
 }
