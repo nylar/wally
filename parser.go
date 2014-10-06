@@ -2,6 +2,7 @@ package wally
 
 import (
 	"strings"
+	"sync"
 )
 
 var stopWords = map[string]bool{
@@ -199,21 +200,45 @@ func SplitTextIntoWords(text interface{}) []string {
 
 // Compares a given word to a list of stopper words (words which are common
 // and therefore should be ignored when indexing).
-func Stopper(words []string) []string {
-	wordList := []string{}
-
-	for _, word := range words {
-		word = strings.ToLower(word)
-		if _, ok := stopWords[word]; !ok {
-			wordList = append(wordList, word)
-		}
+func Stopper(word string) string {
+	if _, ok := stopWords[word]; ok {
+		return ""
 	}
-	
-	return wordList
+	return word
 }
 
 func Parse(text interface{}) []string {
+	// Divide into individual words
 	words := SplitTextIntoWords(text)
-	words = Stopper(words)
-	return words
+
+	var normalisedWords []string
+	var wg sync.WaitGroup
+
+	wg.Add(len(words))
+	for _, word := range words {
+		go func(word string) {
+			defer wg.Done()
+
+			// Remove punctuation and any other non alphanumeric value.
+
+			// Lowercase words
+			word = strings.ToLower(word)
+
+			// Remove stopper words
+			word = Stopper(word)
+
+			if word == "" {
+				return
+			}
+
+			// Apply stemming
+
+			// Append to normalised word list
+			normalisedWords = append(normalisedWords, word)
+		}(word)
+	}
+
+	wg.Wait()
+
+	return normalisedWords
 }

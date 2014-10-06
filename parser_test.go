@@ -2,40 +2,35 @@ package wally
 
 import (
 	"io/ioutil"
-	"testing"
 	"strings"
+	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestStopper(t *testing.T) {
 	tests := []struct {
-		Input  []string
-		Output []string
+		Input  string
+		Output string
 	}{
 		{
-			[]string{"computer"},
-			[]string{"computer"},
+			"computer",
+			"computer",
 		},
 
 		{
-			[]string{"the"},
-			[]string{},
+			"the",
+			"",
 		},
 
 		{
-			[]string{"technology"},
-			[]string{"technology"},
+			"technology",
+			"technology",
 		},
 
 		{
-			[]string{"ComPutEr"},
-			[]string{"computer"},
-		},
-
-		{
-			[]string{"Wasn't"},
-			[]string{},
+			"wasn't",
+			"",
 		},
 	}
 
@@ -89,13 +84,13 @@ func TestParse(t *testing.T) {
 			"I am a block of text and I am going to be parsed",
 			[]string{"block", "text", "going", "parsed"},
 		},
-		
+
 		{
 			[]byte("I am another block of text but now I am in bytes"),
 			[]string{"another", "block", "text", "now", "bytes"},
 		},
 	}
-	
+
 	for _, test := range tests {
 		assert.Equal(t, test.Output, Parse(test.Input))
 	}
@@ -128,11 +123,13 @@ func BenchmarkStopper(b *testing.B) {
 	if err != nil {
 		b.Error("Could not load test data")
 	}
-	
+
 	data := strings.Fields(string(file))
-	
+
 	for n := 0; n < b.N; n++ {
-		Stopper(data)
+		for _, word := range data {
+			Stopper(word)
+		}
 	}
 }
 
@@ -145,7 +142,9 @@ func BenchmarkStopper_two(b *testing.B) {
 	data := strings.Fields(string(file))
 
 	for n := 0; n < b.N; n++ {
-		Stopper(data)
+		for _, word := range data {
+			Stopper(word)
+		}
 	}
 }
 
@@ -154,7 +153,7 @@ func BenchmarkParse(b *testing.B) {
 	if err != nil {
 		b.Error("Could not load test data")
 	}
-	
+
 	for n := 0; n < b.N; n++ {
 		Parse(file)
 	}
