@@ -1,6 +1,7 @@
 package wally
 
 import (
+	"regexp"
 	"strings"
 	"sync"
 )
@@ -182,6 +183,8 @@ var stopWords = map[string]bool{
 	"yourselves": true,
 }
 
+var punctuationRegex = regexp.MustCompile("[][(){},.;!?<>%]")
+
 // Given a blob of text, as a string or slice of bytes, split each word separted
 // by whitespace, extra whitespace should be removed, any other type returns
 // an empty string and therefore will not be processed later.
@@ -207,6 +210,13 @@ func Stopper(word string) string {
 	return word
 }
 
+// Removes insignificant punctuation from a string. E.g. "Hello," -> "Hello",
+// but "wasn't" -> "wasn't" remains unaffected.
+func RemovePunctuation(word string) string {
+	word = punctuationRegex.ReplaceAllString(word, "")
+	return word
+}
+
 func Parse(text interface{}) []string {
 	// Divide into individual words
 	words := SplitTextIntoWords(text)
@@ -220,6 +230,7 @@ func Parse(text interface{}) []string {
 			defer wg.Done()
 
 			// Remove punctuation and any other non alphanumeric value.
+			word = RemovePunctuation(word)
 
 			// Lowercase words
 			word = strings.ToLower(word)

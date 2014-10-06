@@ -96,6 +96,36 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestRemovePunctuation(t *testing.T) {
+	tests := []struct {
+		Input, Output string
+	}{
+		{
+			"hello,",
+			"hello",
+		},
+
+		{
+			"world.",
+			"world",
+		},
+
+		{
+			"wasn't",
+			"wasn't",
+		},
+
+		{
+			"where's",
+			"where's",
+		},
+	}
+
+	for _, test := range tests {
+		assert.Equal(t, test.Output, RemovePunctuation(test.Input))
+	}
+}
+
 func BenchmarkSplitTextIntoWords(b *testing.B) {
 	file, err := ioutil.ReadFile("test_data/test.txt") // 30654 words
 	if err != nil {
@@ -167,5 +197,35 @@ func BenchmarkParse_two(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		Parse(file)
+	}
+}
+
+func BenchmarkRemovePunctuation(b *testing.B) {
+	file, err := ioutil.ReadFile("test_data/test.txt") // 30654 words
+	if err != nil {
+		b.Error("Could not load test data")
+	}
+
+	data := strings.Fields(string(file))
+
+	for n := 0; n < b.N; n++ {
+		for _, word := range data {
+			RemovePunctuation(word)
+		}
+	}
+}
+
+func BenchmarkRemovePunctuation_two(b *testing.B) {
+	file, err := ioutil.ReadFile("test_data/test_2.txt") // 1891 words
+	if err != nil {
+		b.Error("Could not load test data")
+	}
+
+	data := strings.Fields(string(file))
+
+	for n := 0; n < b.N; n++ {
+		for _, word := range data {
+			RemovePunctuation(word)
+		}
 	}
 }
