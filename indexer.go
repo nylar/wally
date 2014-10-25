@@ -1,9 +1,12 @@
 package wally
 
 import (
-	"regexp"
+	"fmt"
 	"strings"
 	"sync"
+
+	"code.google.com/p/go-uuid/uuid"
+	rdb "github.com/dancannon/gorethink"
 )
 
 var stopWords = map[string]bool{
@@ -183,7 +186,45 @@ var stopWords = map[string]bool{
 	"yourselves": true,
 }
 
-var punctuationRegex = regexp.MustCompile("[][(){},.;!?<>%]")
+var (
+	Database      string
+	DocumentTable string
+	IndexTable    string
+)
+
+type Document struct {
+	Id      string `gorethink:"id"`
+	Source  string `gorethink:"source"`
+	Content string `gorethink:"content"`
+}
+
+func (d *Document) String() string {
+	return fmt.Sprintf("Document#%s", d.Id)
+}
+
+func (d *Document) Put(session *rdb.Session) error {
+	if d.Id == "" {
+		d.Id = uuid.New()
+	}
+
+	_, err := rdb.Db(Database).Table(DocumentTable).Insert(d).RunWrite(session)
+	return err
+}
+
+type Index struct {
+	Id         string `gorethink:"id"`
+	Count      int64  `gorethink:"count"`
+	DocumentId string `gorethink:"document_id"`
+}
+
+func (i *Index) String() string {
+	return fmt.Sprintf("Index#%s", i.Id)
+}
+
+func (i *Index) Put(session *rdb.Session) error {
+	_, err := rdb.Db(Database).Table(IndexTable).Insert(i).RunWrite(session)
+	return err
+}
 
 // Given a blob of text, as a string or slice of bytes, split each word separted
 // by whitespace, extra whitespace should be removed, any other type returns
@@ -210,18 +251,11 @@ func Stopper(word string) string {
 	return word
 }
 
-// Removes insignificant punctuation from a string. E.g. "Hello," -> "Hello",
-// but "wasn't" -> "wasn't" remains unaffected.
-func RemovePunctuation(word string) string {
-	word = punctuationRegex.ReplaceAllString(word, "")
-	return word
-}
-
-func Parse(text interface{}) []string {
+func Parse(text interface{}, documentId string) []Index {
 	// Divide into individual words
 	words := SplitTextIntoWords(text)
 
-	var normalisedWords []string
+	var normalisedWords []Index
 	var wg sync.WaitGroup
 
 	wg.Add(len(words))
@@ -229,23 +263,23 @@ func Parse(text interface{}) []string {
 		go func(word string) {
 			defer wg.Done()
 
-			// Remove punctuation and any other non alphanumeric value.
-			word = RemovePunctuation(word)
-
 			// Lowercase words
 			word = strings.ToLower(word)
 
 			// Remove stopper words
 			word = Stopper(word)
 
-			if word == "" {
+			if word == "" || len(word) < 2 {
 				return
 			}
 
 			// Apply stemming
 
 			// Append to normalised word list
-			normalisedWords = append(normalisedWords, word)
+			normalisedWords = append(normalisedWords, Index{
+				Id:         word,
+				DocumentId: documentId,
+			})
 		}(word)
 	}
 
