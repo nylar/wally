@@ -1,7 +1,6 @@
 # Wally
 
-
-[![Build Status](https://drone.io/github.com/nylar/wally/status.png)](https://drone.io/github.com/nylar/wally/latest)
+[![wercker status](https://app.wercker.com/status/ffa1468bc1ebe9c1dd7d0c2d00f4c76f/s "wercker status")](https://app.wercker.com/project/bykey/ffa1468bc1ebe9c1dd7d0c2d00f4c76f)
 
 A full-text search engine built on Go.
 

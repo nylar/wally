@@ -31,6 +31,10 @@ func init() {
 }
 
 func DbBootstrap() {
+	// Reset database
+	rdb.DbDrop(Database).Exec(session)
+	rdb.DbCreate(Database).Exec(session)
+	
 	// Drop tables
 	rdb.Db(Database).TableDrop(DocumentTable).Run(session)
 	rdb.Db(Database).TableDrop(IndexTable).Run(session)
