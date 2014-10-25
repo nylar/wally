@@ -18,7 +18,9 @@ func init() {
 	Database = "testing"
 	DocumentTable = "documents"
 	IndexTable = "indexes"
-	
+}
+
+func DbConnect() {
 	var err error
 	session, err = rdb.Connect(rdb.ConnectOpts{
 		Address:  "localhost:28015",
@@ -31,9 +33,12 @@ func init() {
 }
 
 func DbBootstrap() {
+	DbConnect()
 	// Reset database
 	rdb.DbDrop(Database).Exec(session)
 	rdb.DbCreate(Database).Exec(session)
+	
+	DbConnect()
 	
 	// Drop tables
 	rdb.Db(Database).TableDrop(DocumentTable).Run(session)
