@@ -1,28 +1,28 @@
 box: wercker/golang
-
 services:
-	- mies/rethinkdb@1.5.1
-
+  - mies/rethinkdb
 build:
-	steps:
-		- setup-go-workspace
+  steps:
+    - setup-go-workspace
 
-		- script:
-			name: go get
-			code: |
-				cd $WERCKER_SOURCE_DIR
-				go version
-				go get ./...
-				go get code.google.com/p/go-uuid/uuid
-				go get github.com/stretchr/testify
-				go get github.com/dancannon/gorethink
+    - script:
+        name: go get
+        code: |
+          cd $WERCKER_SOURCE_DIR
+          go version
+          go get ./...
+          go get code.google.com/p/go-uuid/uuid
+          go get github.com/stretchr/testify
+          go get github.com/dancannon/gorethink
 
-		- script:
-			name: go build
-			code: |
-				go build ./...
-		
-		- script:
-			name: go test
-			code: |
-				go test ./...
+    # Build the project
+    - script:
+        name: go build
+        code: |
+          go build ./...
+
+    # Test the project
+    - script:
+        name: go test
+        code: |
+          go test ./...
