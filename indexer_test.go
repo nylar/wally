@@ -112,7 +112,7 @@ func TestIndexer_SplitTextIntoWords(t *testing.T) {
 	}
 }
 
-func TestIndexer_Parse(t *testing.T) {
+func TestIndexer_Indexer(t *testing.T) {
 	docId := "12345-67890-ABCDE"
 	
 	tests := []struct {
@@ -142,7 +142,7 @@ func TestIndexer_Parse(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		assert.Equal(t, test.Output, Parse(test.Input, docId))
+		assert.Equal(t, test.Output, Indexer(test.Input, docId))
 	}
 }
 
@@ -257,7 +257,7 @@ func BenchmarkStopper_two(b *testing.B) {
 	}
 }
 
-func BenchmarkParse(b *testing.B) {
+func BenchmarkIndexer(b *testing.B) {
 	docId := "12345-67890-ABCDE"
 	file, err := ioutil.ReadFile("test_data/test.txt") // 30654 words
 	if err != nil {
@@ -265,11 +265,11 @@ func BenchmarkParse(b *testing.B) {
 	}
 
 	for n := 0; n < b.N; n++ {
-		Parse(file, docId)
+		Indexer(file, docId)
 	}
 }
 
-func BenchmarkParse_two(b *testing.B) {
+func BenchmarkIndexer_two(b *testing.B) {
 	docId := "12345-67890-ABCDE"
 	file, err := ioutil.ReadFile("test_data/test_2.txt") // 30654 words
 	if err != nil {
@@ -277,6 +277,6 @@ func BenchmarkParse_two(b *testing.B) {
 	}
 
 	for n := 0; n < b.N; n++ {
-		Parse(file, docId)
+		Indexer(file, docId)
 	}
 }

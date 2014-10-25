@@ -251,7 +251,7 @@ func Stopper(word string) string {
 	return word
 }
 
-func Parse(text interface{}, documentId string) []Index {
+func Indexer(text interface{}, documentId string) []Index {
 	// Divide into individual words
 	words := SplitTextIntoWords(text)
 
