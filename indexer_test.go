@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"testing"
+	"os"
 
 	rdb "github.com/dancannon/gorethink"
 	"github.com/stretchr/testify/assert"
@@ -21,7 +22,7 @@ func init() {
 	
 	var err error
 	session, err = rdb.Connect(rdb.ConnectOpts{
-		Address:  "localhost:28015",
+		Address:  os.Getenv("RETHINKDB_URL"),
 		Database: "test",
 	})
 	
@@ -31,6 +32,8 @@ func init() {
 }
 
 func DbBootstrap() {
+	// Reset database
+	rdb.DbDrop(Database).Exec(session)
 	rdb.DbCreate(Database).Exec(session)
 	
 	// Drop tables
