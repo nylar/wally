@@ -24,12 +24,10 @@ func main() {
 			Value: "",
 			Usage: "wally config file",
 			EnvVar: "WALLY_CONFIG",
-		}
+		},
 	}
 	
-	app.Commands = []cli.Command{
-		
-	}
+	app.Commands = []cli.Command{}
 	
 	app.Run(os.Args)
 }
