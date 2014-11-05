@@ -2,6 +2,7 @@ package wally
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -230,15 +231,7 @@ func (i *Index) Put(session *rdb.Session) error {
 // by whitespace, extra whitespace should be removed, any other type returns
 // an empty string and therefore will not be processed later.
 func SplitTextIntoWords(text interface{}) []string {
-	var words string
-	switch text.(type) {
-	case string:
-		words = text.(string)
-	case []byte:
-		words = string(text.([]byte))
-	default:
-		words = ""
-	}
+	words := ToString(text)
 	return strings.Fields(words)
 }
 
@@ -286,4 +279,17 @@ func Indexer(text interface{}, documentId string) []Index {
 	wg.Wait()
 
 	return normalisedWords
+}
+
+func ToString(v interface{}) string {
+	switch v.(type) {
+	case string:
+		return v.(string)
+	case []byte:
+		return string(v.([]byte))
+	case int:
+		return strconv.Itoa(v.(int))
+	default:
+		return ""
+	}
 }

@@ -103,6 +103,11 @@ func TestIndexer_SplitTextIntoWords(t *testing.T) {
 
 		{
 			32,
+			[]string{"32"},
+		},
+
+		{
+			true,
 			[]string{},
 		},
 	}
