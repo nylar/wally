@@ -213,6 +213,20 @@ func TestIndexer_DocumentPut(t *testing.T) {
 	assert.Equal(t, d.Content, "Lorem ipsum dolor sit amet.")
 }
 
+func TestIndexer_RemoveDuplicates(t *testing.T) {
+	indexes := []Index{
+		Index{Word: "hello"},
+		Index{Word: "world"},
+		Index{Word: "hello"},
+		Index{Word: "hello"},
+		Index{Word: "world"},
+		Index{Word: "cruel"},
+	}
+	
+	indexes = RemoveDuplicates(indexes)
+	assert.Equal(t, len(indexes), 3)
+}
+
 func BenchmarkSplitTextIntoWords(b *testing.B) {
 	file, err := ioutil.ReadFile("test_data/test.txt") // 30654 words
 	if err != nil {

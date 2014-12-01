@@ -42,7 +42,7 @@ func SearchFunc(c *cli.Context) {
 	
 	keys := strings.Split(query, " ")
 	
-	results, err := rdb.Db(wally.Database).Table(wally.IndexTable).GetAllByIndex("word", rdb.Args(keys)).EqJoin("document_id", rdb.Db(wally.Database).Table(wally.DocumentTable)).Zip().OrderBy("count").Run(session)
+	results, err := rdb.Db(wally.Database).Table(wally.IndexTable).GetAllByIndex("word", rdb.Args(keys)).EqJoin("document_id", rdb.Db(wally.Database).Table(wally.DocumentTable)).Zip().OrderBy(rdb.Desc("count")).Run(session)
 	if err != nil {
 		color.Set(color.FgRed)
 		log.Fatalln(err.Error())

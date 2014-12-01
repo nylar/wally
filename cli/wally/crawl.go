@@ -75,24 +75,23 @@ func Crawler(url string) {
 	docContent := []string{}
 
 	for _, node := range content {
-		indexes := wally.Indexer(node.Content(), d.Id)
-		numIndex := len(indexes)
-		if numIndex == 0 {
-			Warning.Printf("Skipping index of size 0.\n")
-			continue
-		}
 		docContent = append(docContent, node.Content())
-		Info.Printf("Processing %d words.\n", numIndex)
-		_, err :=  rdb.Db(wally.Database).Table(wally.IndexTable).Insert(indexes).RunWrite(session)
-		if err != nil {
-			color.Set(color.FgRed)
-			log.Fatalln(err.Error())
-			color.Unset()
-		}
+	}
+	
+	words := strings.Join(docContent, "\n")
+	
+	Info.Printf("Processing %d words.\n", len(words))
+	
+	indexes := wally.Indexer(words, d.Id)
+	
+	if _, err :=  rdb.Db(wally.Database).Table(wally.IndexTable).Insert(indexes).RunWrite(session); err != nil {
+		color.Set(color.FgRed)
+		log.Fatalln(err.Error())
+		color.Unset()
 	}
 	
 	rdb.Db(wally.Database).Table(wally.DocumentTable).Get(d.Id).Update(
-		map[string]interface{}{"content": strings.Join(docContent, "\n")},
+		map[string]interface{}{"content": words},
 	).RunWrite(session)
 	
 	Success.Printf("\nIndexing complete. Completed in %s.\n", time.Since(start))

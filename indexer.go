@@ -248,6 +248,30 @@ func Stopper(word string) string {
 	return word
 }
 
+func RemoveDuplicates(i []Index) []Index {
+	result := []Index{}
+	seen := map[string]int64{}
+	for _, val := range i {
+		if _, ok := seen[val.Word]; !ok {
+			// val.Count = val.Count + 1
+			result = append(result, val)
+			seen[val.Word] = seen[val.Word] + 1
+		} else {
+			seen[val.Word] = seen[val.Word] + 1
+		}
+	}
+	
+	finalResults := []Index{}
+	
+	for _, res := range result {
+		count := seen[res.Word]
+		res.Count = count
+		finalResults = append(finalResults, res)
+	}
+	return finalResults
+}
+
+
 func Indexer(text interface{}, documentId string) []Index {
 	// Divide into individual words
 	words := SplitTextIntoWords(text)
@@ -283,7 +307,7 @@ func Indexer(text interface{}, documentId string) []Index {
 
 	wg.Wait()
 
-	return normalisedWords
+	return RemoveDuplicates(normalisedWords)
 }
 
 func ToString(v interface{}) string {
