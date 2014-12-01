@@ -188,9 +188,9 @@ var stopWords = map[string]bool{
 }
 
 var (
-	Database      string
-	DocumentTable string
-	IndexTable    string
+	Database = "wally"
+	DocumentTable = "documents"
+	IndexTable = "indexes"
 )
 
 type Document struct {
@@ -214,6 +214,7 @@ func (d *Document) Put(session *rdb.Session) error {
 
 type Index struct {
 	Id         string `gorethink:"id"`
+	Word string `gorethink:"word"`
 	Count      int64  `gorethink:"count"`
 	DocumentId string `gorethink:"document_id"`
 }
@@ -223,6 +224,9 @@ func (i *Index) String() string {
 }
 
 func (i *Index) Put(session *rdb.Session) error {
+	if i.Id == "" {
+		i.Id = uuid.New()
+	}
 	_, err := rdb.Db(Database).Table(IndexTable).Insert(i).RunWrite(session)
 	return err
 }
@@ -270,7 +274,7 @@ func Indexer(text interface{}, documentId string) []Index {
 
 			// Append to normalised word list
 			normalisedWords = append(normalisedWords, Index{
-				Id:         word,
+				Word:         word,
 				DocumentId: documentId,
 			})
 		}(word)

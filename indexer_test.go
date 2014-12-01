@@ -127,21 +127,21 @@ func TestIndexer_Indexer(t *testing.T) {
 		{
 			"I am a block of text and I am going to be parsed",
 			[]Index{
-				Index{Id: "block", DocumentId: docId, Count: 0},
-				Index{Id: "text", DocumentId: docId, Count: 0},
-				Index{Id: "going", DocumentId: docId, Count: 0},
-				Index{Id: "parsed", DocumentId: docId, Count: 0},
+				Index{Word: "block", DocumentId: docId, Count: 0},
+				Index{Word: "text", DocumentId: docId, Count: 0},
+				Index{Word: "going", DocumentId: docId, Count: 0},
+				Index{Word: "parsed", DocumentId: docId, Count: 0},
 			},
 		},
 
 		{
 			[]byte("I am another block of text but now I am in bytes"),
 			[]Index{
-				Index{Id: "another", DocumentId: docId, Count: 0},
-				Index{Id: "block", DocumentId: docId, Count: 0},
-				Index{Id: "text", DocumentId: docId, Count: 0},
-				Index{Id: "now", DocumentId: docId, Count: 0},
-				Index{Id: "bytes", DocumentId: docId, Count: 0},
+				Index{Word: "another", DocumentId: docId, Count: 0},
+				Index{Word: "block", DocumentId: docId, Count: 0},
+				Index{Word: "text", DocumentId: docId, Count: 0},
+				Index{Word: "now", DocumentId: docId, Count: 0},
+				Index{Word: "bytes", DocumentId: docId, Count: 0},
 			},
 		},
 	}
@@ -162,19 +162,21 @@ func TestIndexer_IndexString(t *testing.T) {
 func TestIndexer_IndexPut(t *testing.T) {
 	DbBootstrap()
 
-	index := Index{Id: "hello", Count: 5, DocumentId: "12345-67890-ABCDE"}
+	index := Index{Word: "hello", Count: 5, DocumentId: "12345-67890-ABCDE"}
 
 	err := index.Put(session)
 	assert.Nil(t, err)
+	
 
-	res, err := rdb.Db(Database).Table(IndexTable).Get("hello").Run(session)
+	res, err := rdb.Db(Database).Table(IndexTable).Get(index.Id).Run(session)
 	assert.Nil(t, err)
 
 	var i Index
 	err = res.One(&i)
 	assert.Nil(t, err)
 
-	assert.Equal(t, i.Id, "hello")
+	assert.NotEqual(t, i.Id, "")
+	assert.Equal(t, i.Word, "hello")
 	assert.Equal(t, i.Count, 5)
 	assert.Equal(t, i.DocumentId, "12345-67890-ABCDE")
 }
