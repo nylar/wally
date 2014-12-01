@@ -274,6 +274,7 @@ func Indexer(text interface{}, documentId string) []Index {
 
 			// Append to normalised word list
 			normalisedWords = append(normalisedWords, Index{
+				Id: uuid.New(),
 				Word:         word,
 				DocumentId: documentId,
 			})

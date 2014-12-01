@@ -83,13 +83,11 @@ func Crawler(url string) {
 		}
 		docContent = append(docContent, node.Content())
 		Info.Printf("Processing %d words.\n", numIndex)
-		for _, i := range indexes {
-			err := i.Put(session)
-			if err != nil {
-				color.Set(color.FgRed)
-				log.Fatalln(err.Error())
-				color.Unset()
-			}
+		_, err :=  rdb.Db(wally.Database).Table(wally.IndexTable).Insert(indexes).RunWrite(session)
+		if err != nil {
+			color.Set(color.FgRed)
+			log.Fatalln(err.Error())
+			color.Unset()
 		}
 	}
 	
