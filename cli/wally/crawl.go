@@ -80,7 +80,7 @@ func Crawler(url string) {
 	
 	words := strings.Join(docContent, "\n")
 	
-	Info.Printf("Processing %d words.\n", len(words))
+	Info.Printf("Processing %d words.\n", len(strings.Fields(words)))
 	
 	indexes := wally.Indexer(words, d.Id)
 	
