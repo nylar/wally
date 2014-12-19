@@ -1,4 +1,4 @@
-# Wally
+![wally](http://i.imgur.com/MSny4Kj.png)
 
 [![wercker status](https://app.wercker.com/status/ffa1468bc1ebe9c1dd7d0c2d00f4c76f/s "wercker status")](https://app.wercker.com/project/bykey/ffa1468bc1ebe9c1dd7d0c2d00f4c76f)
 
