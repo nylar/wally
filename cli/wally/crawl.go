@@ -7,13 +7,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nylar/odlaw"
 	"github.com/nylar/wally"
 
 	"github.com/codegangsta/cli"
 	rdb "github.com/dancannon/gorethink"
 	"github.com/fatih/color"
-	"github.com/moovweb/gokogiri"
-	"github.com/moovweb/gokogiri/xpath"
 )
 
 var (
@@ -44,56 +43,38 @@ func Crawler(url string) {
 		color.Unset()
 	}
 
-	doc, err := gokogiri.ParseHtml(data)
-	defer doc.Free()
-	if err != nil {
-		color.Set(color.FgRed)
-		log.Fatalln(err.Error())
-		color.Unset()
-	}
+	doc := odlaw.NewDocument(string(data))
+	title := odlaw.ExtractTitle(doc)
+	author := odlaw.ExtractAuthor(doc)
+	content := odlaw.ExtractText(doc)
 
-	xp := xpath.Compile("//p")
-
-	content, err := doc.Root().Search(xp)
-	if err != nil {
-		color.Set(color.FgRed)
-		log.Fatalln(err.Error())
-		color.Unset()
-	}
-	
 	d := wally.Document{
 		Source: url,
+		Title:  title,
+		Author: author,
 	}
 	if err := d.Put(session); err != nil {
 		color.Set(color.FgRed)
 		log.Fatalln(err.Error())
 		color.Unset()
 	}
-	
-	Success.Printf("Created document: %s.\n\n", d.String())
-	
-	docContent := []string{}
 
-	for _, node := range content {
-		docContent = append(docContent, node.Content())
-	}
-	
-	words := strings.Join(docContent, "\n")
-	
-	Info.Printf("Processing %d words.\n", len(strings.Fields(words)))
-	
-	indexes := wally.Indexer(words, d.Id)
-	
-	if _, err :=  rdb.Db(wally.Database).Table(wally.IndexTable).Insert(indexes).RunWrite(session); err != nil {
+	Success.Printf("Created document: %s.\n\n", d.String())
+
+	Info.Printf("Processing %d words.\n", len(strings.Fields(content)))
+
+	indexes := wally.Indexer(content, d.Id)
+
+	if _, err := rdb.Db(wally.Database).Table(wally.IndexTable).Insert(indexes).RunWrite(session); err != nil {
 		color.Set(color.FgRed)
 		log.Fatalln(err.Error())
 		color.Unset()
 	}
-	
+
 	rdb.Db(wally.Database).Table(wally.DocumentTable).Get(d.Id).Update(
-		map[string]interface{}{"content": words},
+		map[string]interface{}{"content": content},
 	).RunWrite(session)
-	
+
 	Success.Printf("\nIndexing complete. Completed in %s.\n", time.Since(start))
 }
 
@@ -116,10 +97,10 @@ func CrawlCommand() cli.Command {
 
 func CrawlFunc(c *cli.Context) {
 	url := c.String("url")
-	
+
 	urls := strings.Split(url, "|")
-	
+
 	for _, u := range urls {
-		Crawler(u)	
+		Crawler(u)
 	}
 }

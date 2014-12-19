@@ -188,14 +188,16 @@ var stopWords = map[string]bool{
 }
 
 var (
-	Database = "wally"
+	Database      = "wally"
 	DocumentTable = "documents"
-	IndexTable = "indexes"
+	IndexTable    = "indexes"
 )
 
 type Document struct {
 	Id      string `gorethink:"id"`
 	Source  string `gorethink:"source"`
+	Title   string `gorethink:"title"`
+	Author  string `gorethink:"author"`
 	Content string `gorethink:"content"`
 }
 
@@ -214,7 +216,7 @@ func (d *Document) Put(session *rdb.Session) error {
 
 type Index struct {
 	Id         string `gorethink:"id"`
-	Word string `gorethink:"word"`
+	Word       string `gorethink:"word"`
 	Count      int64  `gorethink:"count"`
 	DocumentId string `gorethink:"document_id"`
 }
@@ -260,9 +262,9 @@ func RemoveDuplicates(i []Index) []Index {
 			seen[val.Word] = seen[val.Word] + 1
 		}
 	}
-	
+
 	finalResults := []Index{}
-	
+
 	for _, res := range result {
 		count := seen[res.Word]
 		res.Count = count
@@ -270,7 +272,6 @@ func RemoveDuplicates(i []Index) []Index {
 	}
 	return finalResults
 }
-
 
 func Indexer(text interface{}, documentId string) []Index {
 	// Divide into individual words
@@ -298,8 +299,8 @@ func Indexer(text interface{}, documentId string) []Index {
 
 			// Append to normalised word list
 			normalisedWords = append(normalisedWords, Index{
-				Id: uuid.New(),
-				Word:         word,
+				Id:         uuid.New(),
+				Word:       word,
 				DocumentId: documentId,
 			})
 		}(word)
