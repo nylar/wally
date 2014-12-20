@@ -27,5 +27,12 @@ build:
         code: |
           go test ./...
 
-    - tcnksm/goveralls:
-        token: $COVERALLS_TOKEN
+    - script:
+        name: go coverage
+        code: |
+          go get code.google.com/p/go.tools/cmd/cover
+          go get github.com/mattn/goveralls
+          go get github.com/modocache/gover
+          go test ./... -cover
+          gover
+          goveralls -coverprofile=gover.coverprofile -repotoken $COVERALLS_TOKEN
