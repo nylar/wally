@@ -1,6 +1,9 @@
 ![wally](http://i.imgur.com/MSny4Kj.png)
 
-[![wercker status](https://app.wercker.com/status/ffa1468bc1ebe9c1dd7d0c2d00f4c76f/s "wercker status")](https://app.wercker.com/project/bykey/ffa1468bc1ebe9c1dd7d0c2d00f4c76f)
+[![wercker status](https://img.shields.io/wercker/ci/544c0c84ea87f6374f000650.svg?style=flat-square "wercker status")](https://app.wercker.com/project/bykey/ffa1468bc1ebe9c1dd7d0c2d00f4c76f)
+[![godoc reference](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square "godoc reference")](https://godoc.org/github.com/nylar/wally)
+[![license](http://img.shields.io/badge/license-unlicensed-red.svg?style=flat-square "license")](https://raw.githubusercontent.com/nylar/wally/master/LICENSE)
+[![coverage](https://img.shields.io/coveralls/nylar/wally.svg?style=flat-square "coverage")](https://coveralls.io/r/nylar/wally)
 
 A full-text search engine built on Go.
 
@@ -10,30 +13,3 @@ You can grab that latest build of Wally using:
 
 ```go get -u github.com/nylar/wally```
 
-## Using Wally
-
-Parsing a block of text
-
-```go
-package main
-
-import (
-	"fmt"
-	"io/ioutil"
-	"strings"
-
-	"github.com/nylar/wally"
-)
-
-func main() {
-	file, err := ioutil.ReadFile("somefile.txt")
-	if err != nil {
-		panic("Could not read file")
-	}
-
-	parsedWords := wally.Parse(file)
-
-	fmt.Printf("Processed:\t %d words.\n", len(strings.Fields(string(file))))
-	fmt.Printf("Finished with:\t %d words.\n", len(parsedWords))
-}
-```
