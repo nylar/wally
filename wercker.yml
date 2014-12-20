@@ -31,7 +31,5 @@ build:
         name: go coverage
         code: |
           go get github.com/mattn/goveralls
-          go get github.com/modocache/gover
-          go test ./... -cover
-          gover
-          goveralls -coverprofile=gover.coverprofile -service=wercker.com -repotoken $COVERALLS_TOKEN
+          go test -coverprofile=out.cover
+          goveralls -coverprofile=out.cover -service=wercker.com -repotoken $COVERALLS_TOKEN
