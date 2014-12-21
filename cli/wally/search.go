@@ -3,20 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"strings"
-	"time"
-
-	"github.com/nylar/wally"
 
 	"github.com/codegangsta/cli"
-	rdb "github.com/dancannon/gorethink"
 	"github.com/fatih/color"
+	"github.com/nylar/wally"
 )
-
-type Query struct {
-	wally.Document
-	wally.Index
-}
 
 func SearchCommand() cli.Command {
 	return cli.Command{
@@ -36,30 +27,20 @@ func SearchCommand() cli.Command {
 }
 
 func SearchFunc(c *cli.Context) {
-	start := time.Now()
-	res := []Query{}
 	query := c.String("query")
 
-	keys := strings.Split(query, " ")
-
-	results, err := rdb.Db(wally.Database).Table(wally.IndexTable).GetAllByIndex("word", rdb.Args(keys)).EqJoin("document_id", rdb.Db(wally.Database).Table(wally.DocumentTable)).Zip().OrderBy(rdb.Desc("count")).Run(session)
+	results, err := wally.Search(query, session)
 	if err != nil {
 		color.Set(color.FgRed)
 		log.Fatalln(err.Error())
 		color.Unset()
 	}
 
-	if err := results.All(&res); err != nil {
-		color.Set(color.FgRed)
-		log.Fatalln(err.Error())
-		color.Unset()
-	}
-
-	if len(res) == 0 {
+	if results.Count == 0 {
 		fmt.Println("No results found")
 	} else {
-		Std.Printf("\nFound %d results in %s\n\n", len(res), time.Since(start))
-		for _, r := range res {
+		Std.Printf("\nFound %d results in %s\n\n", results.Count, results.Time)
+		for _, r := range results.Results {
 			content := r.Content
 			if r.Title != "" {
 				Info.Printf("\n%s", r.Title)
