@@ -2,7 +2,6 @@ package wally
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -316,17 +315,4 @@ func Indexer(text interface{}, documentId string) []Index {
 	wg.Wait()
 
 	return RemoveDuplicates(normalisedWords)
-}
-
-func ToString(v interface{}) string {
-	switch v.(type) {
-	case string:
-		return v.(string)
-	case []byte:
-		return string(v.([]byte))
-	case int:
-		return strconv.Itoa(v.(int))
-	default:
-		return ""
-	}
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func SearchSetup() error {
-	DbBootstrap()
+	DatabaseRebuild(session)
 
 	d1 := Document{
 		Id:      "1",

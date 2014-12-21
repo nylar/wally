@@ -35,17 +35,6 @@ func init() {
 	rdb.DbCreate(Database).Exec(session)
 }
 
-func DbBootstrap() {
-	// Drop tables
-	rdb.Db(Database).TableDrop(DocumentTable).Run(session)
-	rdb.Db(Database).TableDrop(IndexTable).Run(session)
-
-	// Create tables
-	rdb.Db(Database).TableCreate(DocumentTable).Run(session)
-	rdb.Db(Database).TableCreate(IndexTable).Run(session)
-	rdb.Db(Database).Table(IndexTable).IndexCreate("word").Exec(session)
-}
-
 func TestIndexer_Stopper(t *testing.T) {
 	tests := []struct {
 		Input  string
@@ -162,7 +151,7 @@ func TestIndexer_IndexString(t *testing.T) {
 }
 
 func TestIndexer_IndexPut(t *testing.T) {
-	DbBootstrap()
+	DatabaseRebuild(session)
 
 	index := Index{Word: "hello", Count: 5, DocumentId: "12345-67890-ABCDE"}
 
@@ -191,7 +180,7 @@ func TestIndexer_DocumentString(t *testing.T) {
 }
 
 func TestIndexer_DocumentPut(t *testing.T) {
-	DbBootstrap()
+	DatabaseRebuild(session)
 
 	doc := Document{
 		Source:  "www.google.com",
