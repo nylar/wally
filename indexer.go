@@ -233,6 +233,13 @@ func (i *Index) Put(session *rdb.Session) error {
 	return err
 }
 
+func IndexBatchPut(session *rdb.Session, indexes []Index) error {
+	if _, err := rdb.Db(Database).Table(IndexTable).Insert(indexes).RunWrite(session); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Given a blob of text, as a string or slice of bytes, split each word separted
 // by whitespace, extra whitespace should be removed, any other type returns
 // an empty string and therefore will not be processed later.

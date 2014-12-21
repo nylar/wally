@@ -43,6 +43,7 @@ func DbBootstrap() {
 	// Create tables
 	rdb.Db(Database).TableCreate(DocumentTable).Run(session)
 	rdb.Db(Database).TableCreate(IndexTable).Run(session)
+	rdb.Db(Database).Table(IndexTable).IndexCreate("word").Exec(session)
 }
 
 func TestIndexer_Stopper(t *testing.T) {
@@ -167,7 +168,6 @@ func TestIndexer_IndexPut(t *testing.T) {
 
 	err := index.Put(session)
 	assert.Nil(t, err)
-	
 
 	res, err := rdb.Db(Database).Table(IndexTable).Get(index.Id).Run(session)
 	assert.Nil(t, err)
@@ -222,7 +222,7 @@ func TestIndexer_RemoveDuplicates(t *testing.T) {
 		Index{Word: "world"},
 		Index{Word: "cruel"},
 	}
-	
+
 	indexes = RemoveDuplicates(indexes)
 	assert.Equal(t, len(indexes), 3)
 }
