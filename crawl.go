@@ -14,11 +14,9 @@ func GrabUrl(url string) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	data, err := ioutil.ReadAll(resp.Body)
+	data, _ := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
-	if err != nil {
-		return []byte{}, err
-	}
+
 	return data, nil
 }
 
