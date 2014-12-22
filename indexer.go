@@ -188,13 +188,17 @@ var stopWords = map[string]bool{
 }
 
 var (
-	Database      = "wally"
+	// Database is the name of the database in RethinkDB
+	Database = "wally"
+	// DocumentTable is the name of the documents table in RethinkDB
 	DocumentTable = "documents"
-	IndexTable    = "indexes"
+	// IndexTable is the name of the index table in RethinkDB
+	IndexTable = "indexes"
 )
 
+// Document holds data about a document, ID is usually populated with a UUID.
 type Document struct {
-	Id      string `gorethink:"id"`
+	ID      string `gorethink:"id"`
 	Source  string `gorethink:"source"`
 	Title   string `gorethink:"title"`
 	Author  string `gorethink:"author"`
@@ -202,12 +206,14 @@ type Document struct {
 }
 
 func (d *Document) String() string {
-	return fmt.Sprintf("Document#%s", d.Id)
+	return fmt.Sprintf("Document#%s", d.ID)
 }
 
+// Put writes a single document to the database, if an ID isn't set
+// then one is set as a UUID.
 func (d *Document) Put(session *rdb.Session) error {
-	if d.Id == "" {
-		d.Id = uuid.New()
+	if d.ID == "" {
+		d.ID = uuid.New()
 	}
 
 	res, _ := rdb.Db(Database).Table(DocumentTable).Insert(d).RunWrite(session)
@@ -217,25 +223,30 @@ func (d *Document) Put(session *rdb.Session) error {
 	return nil
 }
 
+// Index holds data about an index for a document, ID is populated with a UUID.
 type Index struct {
-	Id         string `gorethink:"id"`
+	ID         string `gorethink:"id"`
 	Word       string `gorethink:"word"`
 	Count      int64  `gorethink:"count"`
-	DocumentId string `gorethink:"document_id"`
+	DocumentID string `gorethink:"document_id"`
 }
 
 func (i *Index) String() string {
-	return fmt.Sprintf("Index#%s", i.Id)
+	return fmt.Sprintf("Index#%s", i.ID)
 }
 
+// Put writes a single index to the database, if an ID isn't set then one
+// is set as a UUID.
 func (i *Index) Put(session *rdb.Session) error {
-	if i.Id == "" {
-		i.Id = uuid.New()
+	if i.ID == "" {
+		i.ID = uuid.New()
 	}
 	_, err := rdb.Db(Database).Table(IndexTable).Insert(i).RunWrite(session)
 	return err
 }
 
+// IndexBatchPut writes one or more indexes in bulk to the database. indexes is
+// usually created by Indexer() so that each index is given an ID.
 func IndexBatchPut(session *rdb.Session, indexes []Index) error {
 	// FIXME: This call should be returning an error, instead it is returning nil.
 	res, _ := rdb.Db(Database).Table(IndexTable).Insert(indexes).RunWrite(session)
@@ -245,16 +256,16 @@ func IndexBatchPut(session *rdb.Session, indexes []Index) error {
 	return nil
 }
 
-// Given a blob of text, as a string or slice of bytes, split each word separted
-// by whitespace, extra whitespace should be removed, any other type returns
-// an empty string and therefore will not be processed later.
+// SplitTextIntoWords when given a blob of text, as a string or slice of bytes,
+// split each word separted by whitespace, extra whitespace should be removed,
+// any other type returns an empty string and therefore will not be processed later.
 func SplitTextIntoWords(text interface{}) []string {
 	words := ToString(text)
 	return strings.Fields(words)
 }
 
-// Compares a given word to a list of stopper words (words which are common
-// and therefore should be ignored when indexing).
+// Stopper compares a given word to a list of stopper words (words which are
+// common and therefore should be ignored when indexing).
 func Stopper(word string) string {
 	if _, ok := stopWords[word]; ok {
 		return ""
@@ -262,6 +273,9 @@ func Stopper(word string) string {
 	return word
 }
 
+// RemoveDuplicates removes any duplicates results found in an Index slice,
+// when a duplicate is found, the count is incremented when seen and added if
+// it is the first time.
 func RemoveDuplicates(i []Index) []Index {
 	result := []Index{}
 	seen := map[string]int64{}
@@ -285,7 +299,10 @@ func RemoveDuplicates(i []Index) []Index {
 	return finalResults
 }
 
-func Indexer(text interface{}, documentId string) []Index {
+// Indexer takes text of type string, []byte, or integer (anything else will
+// be treated as an empty string). It then concurrently processes each word in
+// the string before removing any duplicates.
+func Indexer(text interface{}, documentID string) []Index {
 	// Divide into individual words
 	words := SplitTextIntoWords(text)
 
@@ -311,9 +328,9 @@ func Indexer(text interface{}, documentId string) []Index {
 
 			// Append to normalised word list
 			normalisedWords = append(normalisedWords, Index{
-				Id:         uuid.New(),
+				ID:         uuid.New(),
 				Word:       word,
-				DocumentId: documentId,
+				DocumentID: documentID,
 			})
 		}(word)
 	}

@@ -15,13 +15,13 @@ func Handler(status int, data []byte) *httptest.Server {
 	}))
 }
 
-func TestCrawl_GrabUrl(t *testing.T) {
+func TestCrawl_grabURL(t *testing.T) {
 	data := []byte("some data")
 	status := 200
 	ts := Handler(status, data)
 	defer ts.Close()
 
-	d, err := GrabUrl(ts.URL)
+	d, err := grabURL(ts.URL)
 	assert.Equal(t, d, data)
 	assert.NoError(t, err)
 }

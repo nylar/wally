@@ -7,17 +7,21 @@ import (
 	rdb "github.com/dancannon/gorethink"
 )
 
+// Query is one result in a successful search.
 type Query struct {
 	Document
 	Index
 }
 
+// Results contains the search results of a successful Search().
 type Results struct {
 	Count   int64
 	Results []Query
 	Time    float64
 }
 
+// Search returns a list of results along with the time taken to run and the
+// number of results found.
 func Search(query string, session *rdb.Session) (*Results, error) {
 	start := time.Now()
 	res := []Query{}

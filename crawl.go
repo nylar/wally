@@ -8,7 +8,7 @@ import (
 	"github.com/nylar/odlaw"
 )
 
-func GrabUrl(url string) ([]byte, error) {
+func grabURL(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return []byte{}, err
@@ -20,8 +20,10 @@ func GrabUrl(url string) ([]byte, error) {
 	return data, nil
 }
 
+// Crawler grabs the contents of a URL and passes the data to Odlaw for
+// processing, it is then written in bulk to the database.
 func Crawler(url string, session *rdb.Session) error {
-	data, err := GrabUrl(url)
+	data, err := grabURL(url)
 	if err != nil {
 		return err
 	}
@@ -39,7 +41,7 @@ func Crawler(url string, session *rdb.Session) error {
 	}
 	_ = d.Put(session)
 
-	indexes := Indexer(content, d.Id)
+	indexes := Indexer(content, d.ID)
 
 	_, _ = rdb.Db(Database).Table(IndexTable).Insert(indexes).RunWrite(session)
 	return nil

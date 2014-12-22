@@ -11,7 +11,7 @@ func SearchSetup() error {
 	DatabaseRebuild(session)
 
 	d1 := Document{
-		Id:      "1",
+		ID:      "1",
 		Source:  "http://example.com",
 		Title:   "Examples, Examples Everywhere",
 		Author:  "John Johnson",
@@ -19,7 +19,7 @@ func SearchSetup() error {
 	}
 
 	d2 := Document{
-		Id:      "2",
+		ID:      "2",
 		Source:  "http://example.org",
 		Title:   "Help Abandoned Examples",
 		Author:  "",
@@ -34,8 +34,8 @@ func SearchSetup() error {
 		return err
 	}
 
-	i1 := Indexer(d1.Content, d1.Id)
-	i2 := Indexer(d2.Content, d2.Id)
+	i1 := Indexer(d1.Content, d1.ID)
+	i2 := Indexer(d2.Content, d2.ID)
 
 	if err := IndexBatchPut(session, i1); err != nil {
 		return err

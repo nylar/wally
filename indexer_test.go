@@ -108,7 +108,7 @@ func TestIndexer_SplitTextIntoWords(t *testing.T) {
 }
 
 func TestIndexer_Indexer(t *testing.T) {
-	docId := "12345-67890-ABCDE"
+	docID := "12345-67890-ABCDE"
 
 	tests := []struct {
 		Input  interface{}
@@ -117,35 +117,35 @@ func TestIndexer_Indexer(t *testing.T) {
 		{
 			"I am a block of text and I am going to be parsed",
 			[]Index{
-				Index{Word: "block", DocumentId: docId, Count: 0},
-				Index{Word: "text", DocumentId: docId, Count: 0},
-				Index{Word: "going", DocumentId: docId, Count: 0},
-				Index{Word: "parsed", DocumentId: docId, Count: 0},
+				Index{Word: "block", DocumentID: docID, Count: 0},
+				Index{Word: "text", DocumentID: docID, Count: 0},
+				Index{Word: "going", DocumentID: docID, Count: 0},
+				Index{Word: "parsed", DocumentID: docID, Count: 0},
 			},
 		},
 
 		{
 			[]byte("I am another block of text but now I am in bytes"),
 			[]Index{
-				Index{Word: "another", DocumentId: docId, Count: 0},
-				Index{Word: "block", DocumentId: docId, Count: 0},
-				Index{Word: "text", DocumentId: docId, Count: 0},
-				Index{Word: "now", DocumentId: docId, Count: 0},
-				Index{Word: "bytes", DocumentId: docId, Count: 0},
+				Index{Word: "another", DocumentID: docID, Count: 0},
+				Index{Word: "block", DocumentID: docID, Count: 0},
+				Index{Word: "text", DocumentID: docID, Count: 0},
+				Index{Word: "now", DocumentID: docID, Count: 0},
+				Index{Word: "bytes", DocumentID: docID, Count: 0},
 			},
 		},
 	}
 
 	for x, test := range tests {
-		i := Indexer(test.Input, docId)
-		assert.NotEqual(t, "", i[x].Id)
+		i := Indexer(test.Input, docID)
+		assert.NotEqual(t, "", i[x].ID)
 	}
 }
 
 func TestIndexer_IndexString(t *testing.T) {
-	indexId := "world"
+	indexID := "world"
 
-	index := Index{Id: indexId}
+	index := Index{ID: indexID}
 
 	assert.Equal(t, "Index#world", index.String())
 }
@@ -153,32 +153,32 @@ func TestIndexer_IndexString(t *testing.T) {
 func TestIndexer_IndexPut(t *testing.T) {
 	DatabaseRebuild(session)
 
-	index := Index{Word: "hello", Count: 5, DocumentId: "12345-67890-ABCDE"}
+	index := Index{Word: "hello", Count: 5, DocumentID: "12345-67890-ABCDE"}
 
 	err := index.Put(session)
 	assert.Nil(t, err)
 
-	res, err := rdb.Db(Database).Table(IndexTable).Get(index.Id).Run(session)
+	res, err := rdb.Db(Database).Table(IndexTable).Get(index.ID).Run(session)
 	assert.Nil(t, err)
 
 	var i Index
 	err = res.One(&i)
 	assert.Nil(t, err)
 
-	assert.NotEqual(t, i.Id, "")
+	assert.NotEqual(t, i.ID, "")
 	assert.Equal(t, i.Word, "hello")
 	assert.Equal(t, i.Count, 5)
-	assert.Equal(t, i.DocumentId, "12345-67890-ABCDE")
+	assert.Equal(t, i.DocumentID, "12345-67890-ABCDE")
 }
 
 func TestIndexer_IndexBatchPut(t *testing.T) {
 	indexes := []Index{
 		{
-			Id:   "1",
+			ID:   "1",
 			Word: "dupe",
 		},
 		{
-			Id:   "1",
+			ID:   "1",
 			Word: "dupe",
 		},
 	}
@@ -187,9 +187,9 @@ func TestIndexer_IndexBatchPut(t *testing.T) {
 }
 
 func TestIndexer_DocumentString(t *testing.T) {
-	docId := "12345-67890-ABCDE"
+	docID := "12345-67890-ABCDE"
 
-	doc := Document{Id: docId}
+	doc := Document{ID: docID}
 
 	assert.Equal(t, "Document#12345-67890-ABCDE", doc.String())
 }
@@ -212,7 +212,7 @@ func TestIndexer_DocumentPut(t *testing.T) {
 	err = res.One(&d)
 	assert.Nil(t, err)
 
-	assert.NotEqual(t, d.Id, "")
+	assert.NotEqual(t, d.ID, "")
 	assert.Equal(t, d.Source, "www.google.com")
 	assert.Equal(t, d.Content, "Lorem ipsum dolor sit amet.")
 }
@@ -220,8 +220,8 @@ func TestIndexer_DocumentPut(t *testing.T) {
 func TestIndexer_DocumentPutDupeDocs(t *testing.T) {
 	DatabaseRebuild(session)
 
-	doc1 := Document{Id: "1"}
-	doc2 := Document{Id: "1"}
+	doc1 := Document{ID: "1"}
+	doc2 := Document{ID: "1"}
 
 	err := doc1.Put(session)
 	assert.NoError(t, err)
@@ -297,25 +297,25 @@ func BenchmarkStopper_two(b *testing.B) {
 }
 
 func BenchmarkIndexer(b *testing.B) {
-	docId := "12345-67890-ABCDE"
+	docID := "12345-67890-ABCDE"
 	file, err := ioutil.ReadFile("test_data/test.txt") // 30654 words
 	if err != nil {
 		b.Error("Could not load test data")
 	}
 
 	for n := 0; n < b.N; n++ {
-		Indexer(file, docId)
+		Indexer(file, docID)
 	}
 }
 
 func BenchmarkIndexer_two(b *testing.B) {
-	docId := "12345-67890-ABCDE"
+	docID := "12345-67890-ABCDE"
 	file, err := ioutil.ReadFile("test_data/test_2.txt") // 30654 words
 	if err != nil {
 		b.Error("Could not load test data")
 	}
 
 	for n := 0; n < b.N; n++ {
-		Indexer(file, docId)
+		Indexer(file, docID)
 	}
 }
