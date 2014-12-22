@@ -171,6 +171,19 @@ func TestIndexer_IndexPut(t *testing.T) {
 	assert.Equal(t, i.DocumentID, "12345-67890-ABCDE")
 }
 
+func TestIndexer_IndexPutInvalid(t *testing.T) {
+	DatabaseRebuild(session)
+
+	i := Index{ID: "1"}
+	i2 := Index{ID: "1"}
+
+	err := i.Put(session)
+	assert.NoError(t, err)
+
+	err = i2.Put(session)
+	assert.Error(t, err)
+}
+
 func TestIndexer_IndexBatchPut(t *testing.T) {
 	indexes := []Index{
 		{
