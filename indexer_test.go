@@ -217,6 +217,19 @@ func TestIndexer_DocumentPut(t *testing.T) {
 	assert.Equal(t, d.Content, "Lorem ipsum dolor sit amet.")
 }
 
+func TestIndexer_DocumentPutDupeDocs(t *testing.T) {
+	DatabaseRebuild(session)
+
+	doc1 := Document{Id: "1"}
+	doc2 := Document{Id: "1"}
+
+	err := doc1.Put(session)
+	assert.NoError(t, err)
+
+	err = doc2.Put(session)
+	assert.Error(t, err)
+}
+
 func TestIndexer_RemoveDuplicates(t *testing.T) {
 	indexes := []Index{
 		Index{Word: "hello"},

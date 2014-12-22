@@ -210,8 +210,11 @@ func (d *Document) Put(session *rdb.Session) error {
 		d.Id = uuid.New()
 	}
 
-	_, err := rdb.Db(Database).Table(DocumentTable).Insert(d).RunWrite(session)
-	return err
+	res, _ := rdb.Db(Database).Table(DocumentTable).Insert(d).RunWrite(session)
+	if res.Errors > 0 {
+		return errors.New(res.FirstError)
+	}
+	return nil
 }
 
 type Index struct {

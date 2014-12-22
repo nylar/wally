@@ -37,15 +37,10 @@ func Crawler(url string, session *rdb.Session) error {
 		Author:  author,
 		Content: content,
 	}
-	if err := d.Put(session); err != nil {
-		return err
-	}
+	_ = d.Put(session)
 
 	indexes := Indexer(content, d.Id)
 
-	if _, err := rdb.Db(Database).Table(IndexTable).Insert(indexes).RunWrite(session); err != nil {
-		return err
-	}
-
+	_, _ = rdb.Db(Database).Table(IndexTable).Insert(indexes).RunWrite(session)
 	return nil
 }

@@ -30,9 +30,7 @@ func Search(query string, session *rdb.Session) (*Results, error) {
 		return nil, err
 	}
 
-	if err := results.All(&res); err != nil {
-		return nil, err
-	}
+	results.All(&res)
 
 	r.Count = int64(len(res))
 	r.Results = res

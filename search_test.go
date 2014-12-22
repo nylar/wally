@@ -3,6 +3,7 @@ package wally
 import (
 	"testing"
 
+	rdb "github.com/dancannon/gorethink"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -53,10 +54,15 @@ func TestSearch_Search(t *testing.T) {
 	}
 
 	results, err := Search("example", session)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
 	assert.NoError(t, err)
 
 	assert.Equal(t, len(results.Results), 2)
+}
+
+func TestSearch_SearchWithNoIndex(t *testing.T) {
+	DatabaseRebuild(session)
+	rdb.Db(Database).Table(IndexTable).IndexDrop("word").Exec(session)
+
+	_, err := Search("hello", session)
+	assert.Error(t, err)
 }
