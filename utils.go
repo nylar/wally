@@ -4,6 +4,14 @@ import (
 	"strconv"
 
 	rdb "github.com/dancannon/gorethink"
+	"github.com/fatih/color"
+)
+
+var (
+	Success = color.New(color.FgGreen)
+	Info    = color.New(color.FgBlue)
+	Warning = color.New(color.FgYellow)
+	Std     = color.New(color.FgMagenta)
 )
 
 func DatabaseRebuild(session *rdb.Session) {

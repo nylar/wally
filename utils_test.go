@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDatabaseRebuild(t *testing.T) {
+func TestUtils_DatabaseRebuild(t *testing.T) {
 	DatabaseRebuild(session)
 
 	res, err := rdb.Db(Database).TableList().Run(session)
@@ -24,7 +24,7 @@ func TestDatabaseRebuild(t *testing.T) {
 	assert.Equal(t, len(response), 2)
 }
 
-func TestToString(t *testing.T) {
+func TestUtils_ToString(t *testing.T) {
 	tests := []struct {
 		input  interface{}
 		output string

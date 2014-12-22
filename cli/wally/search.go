@@ -39,14 +39,14 @@ func SearchFunc(c *cli.Context) {
 	if results.Count == 0 {
 		fmt.Println("No results found")
 	} else {
-		Std.Printf("\nFound %d results in %s\n\n", results.Count, results.Time)
+		wally.Std.Printf("\nFound %d results in %s\n\n", results.Count, results.Time)
 		for _, r := range results.Results {
 			content := r.Content
 			if r.Title != "" {
-				Info.Printf("\n%s", r.Title)
-				Success.Printf("\n%s\n", r.Source)
+				wally.Info.Printf("\n%s", r.Title)
+				wally.Success.Printf("\n%s\n", r.Source)
 			} else {
-				Success.Printf("\n%s\n", r.Source)
+				wally.Success.Printf("\n%s\n", r.Source)
 			}
 			if len(r.Content) > 150 {
 				content = r.Content[:150] + " ..."

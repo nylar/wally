@@ -47,7 +47,7 @@ func SearchSetup() error {
 	return nil
 }
 
-func TestSearch(t *testing.T) {
+func TestSearch_Search(t *testing.T) {
 	if err := SearchSetup(); err != nil {
 		t.Errorf(err.Error())
 	}

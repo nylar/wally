@@ -18,5 +18,5 @@ func RebuildCommand() cli.Command {
 
 func RebuildFunc() {
 	wally.DatabaseRebuild(session)
-	Success.Println("Rebuilt database")
+	wally.Success.Println("Rebuilt database")
 }

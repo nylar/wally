@@ -11,7 +11,10 @@ import (
 	"github.com/fatih/color"
 )
 
-var version = "0.1"
+var (
+	version = "0.1"
+	session *rdb.Session
+)
 
 func init() {
 	var err error
@@ -32,18 +35,18 @@ func main() {
 	app.Version = version
 	app.Usage = "command line utility"
 	app.Flags = []cli.Flag{
-		// cli.StringFlag{
-		// 	Name:   "p, port",
-		// 	Value:  "",
-		// 	Usage:  "wally server port",
-		// 	EnvVar: "WALLY_PORT",
-		// },
-		// cli.StringFlag{
-		// 	Name:   "c, config",
-		// 	Value:  "",
-		// 	Usage:  "wally config file",
-		// 	EnvVar: "WALLY_CONFIG",
-		// },
+	// cli.StringFlag{
+	// 	Name:   "p, port",
+	// 	Value:  "",
+	// 	Usage:  "wally server port",
+	// 	EnvVar: "WALLY_PORT",
+	// },
+	// cli.StringFlag{
+	// 	Name:   "c, config",
+	// 	Value:  "",
+	// 	Usage:  "wally config file",
+	// 	EnvVar: "WALLY_CONFIG",
+	// },
 	}
 
 	app.Commands = []cli.Command{
