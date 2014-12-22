@@ -241,8 +241,11 @@ func (i *Index) Put(session *rdb.Session) error {
 	if i.ID == "" {
 		i.ID = uuid.New()
 	}
-	_, err := rdb.Db(Database).Table(IndexTable).Insert(i).RunWrite(session)
-	return err
+	res, _ := rdb.Db(Database).Table(IndexTable).Insert(i).RunWrite(session)
+	if res.Errors > 0 {
+		return errors.New(res.FirstError)
+	}
+	return nil
 }
 
 // IndexBatchPut writes one or more indexes in bulk to the database. indexes is
