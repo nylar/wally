@@ -171,6 +171,21 @@ func TestIndexer_IndexPut(t *testing.T) {
 	assert.Equal(t, i.DocumentId, "12345-67890-ABCDE")
 }
 
+func TestIndexer_IndexBatchPut(t *testing.T) {
+	indexes := []Index{
+		{
+			Id:   "1",
+			Word: "dupe",
+		},
+		{
+			Id:   "1",
+			Word: "dupe",
+		},
+	}
+	err := IndexBatchPut(session, indexes)
+	assert.Error(t, err)
+}
+
 func TestIndexer_DocumentString(t *testing.T) {
 	docId := "12345-67890-ABCDE"
 

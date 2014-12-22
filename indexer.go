@@ -1,6 +1,7 @@
 package wally
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -233,8 +234,10 @@ func (i *Index) Put(session *rdb.Session) error {
 }
 
 func IndexBatchPut(session *rdb.Session, indexes []Index) error {
-	if _, err := rdb.Db(Database).Table(IndexTable).Insert(indexes).RunWrite(session); err != nil {
-		return err
+	// FIXME: This call should be returning an error, instead it is returning nil.
+	res, _ := rdb.Db(Database).Table(IndexTable).Insert(indexes).RunWrite(session)
+	if res.Errors > 0 {
+		return errors.New(res.FirstError)
 	}
 	return nil
 }
