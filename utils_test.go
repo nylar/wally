@@ -51,3 +51,23 @@ func TestUtils_ToString(t *testing.T) {
 		assert.Equal(t, ToString(test.input), test.output)
 	}
 }
+
+func TestUtils_TruncateText(t *testing.T) {
+	tests := []struct {
+		input  string
+		output string
+	}{
+		{
+			"hello world",
+			"hello world",
+		},
+		{
+			"Lorem ipsum dolor sit amet, natoque quis",
+			"Lorem ipsum dolor sit ...",
+		},
+	}
+
+	for _, test := range tests {
+		assert.Equal(t, TruncateText(test.input, " ...", 25), test.output)
+	}
+}

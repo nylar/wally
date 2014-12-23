@@ -2,6 +2,7 @@ package wally
 
 import (
 	"strconv"
+	"strings"
 
 	rdb "github.com/dancannon/gorethink"
 	"github.com/fatih/color"
@@ -41,4 +42,17 @@ func ToString(v interface{}) string {
 	default:
 		return ""
 	}
+}
+
+// TruncateText returns a truncated version of a string with a suffix appended.
+func TruncateText(text, suffix string, upperBound int) string {
+	if len(text) > upperBound {
+		truncated := text[:upperBound]
+		nextSpace := strings.LastIndex(truncated, " ")
+		if nextSpace > 0 {
+			truncated = text[:nextSpace]
+		}
+		return truncated + suffix
+	}
+	return text
 }
