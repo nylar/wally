@@ -3,6 +3,7 @@ package wally
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -34,7 +35,7 @@ func init() {
 	}
 
 	session, err = rdb.Connect(rdb.ConnectOpts{
-		Address:  Conf.Database.Host,
+		Address:  os.Getenv("RETHINKDB_URL"),
 		Database: "test",
 	})
 
