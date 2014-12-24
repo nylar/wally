@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -16,16 +17,30 @@ var (
 	session *rdb.Session
 )
 
+func logError(err error) {
+	color.Set(color.FgRed)
+	log.Fatalln(err.Error())
+	color.Unset()
+}
+
 func init() {
 	var err error
+	confData, err := ioutil.ReadFile("config.yml")
+	if err != nil {
+		logError(err)
+	}
+
+	wally.Conf, err = wally.LoadConfig(confData)
+	if err != nil {
+		logError(err)
+	}
+
 	session, err = rdb.Connect(rdb.ConnectOpts{
-		Address:  os.Getenv("RETHINKDB_URL"),
-		Database: wally.Database,
+		Address:  wally.Conf.Database.Host,
+		Database: "test",
 	})
 	if err != nil {
-		color.Set(color.FgRed)
-		log.Fatalln(err.Error())
-		color.Unset()
+		logError(err)
 	}
 }
 

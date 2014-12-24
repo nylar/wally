@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/codegangsta/cli"
-	"github.com/fatih/color"
 	"github.com/nylar/wally"
 )
 
@@ -31,9 +29,7 @@ func SearchFunc(c *cli.Context) {
 
 	results, err := wally.Search(query, session)
 	if err != nil {
-		color.Set(color.FgRed)
-		log.Fatalln(err.Error())
-		color.Unset()
+		logError(err)
 	}
 
 	if results.Count == 0 {

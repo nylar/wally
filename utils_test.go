@@ -10,7 +10,7 @@ import (
 func TestUtils_DatabaseRebuild(t *testing.T) {
 	DatabaseRebuild(session)
 
-	res, err := rdb.Db(Database).TableList().Run(session)
+	res, err := rdb.Db(Conf.Database.Name).TableList().Run(session)
 	if err != nil {
 		t.Errorf(err.Error())
 	}

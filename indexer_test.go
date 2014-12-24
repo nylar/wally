@@ -3,7 +3,6 @@ package wally
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"strings"
 	"testing"
 
@@ -11,18 +10,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	TestConfig = `
+database:
+  host: localhost:28015
+  name: testing
+
+tables:
+  document_table: documents
+  index_table: indexes
+`
+)
+
 var (
 	session *rdb.Session
 )
 
 func init() {
-	Database = "testing"
-	DocumentTable = "documents"
-	IndexTable = "indexes"
-
 	var err error
+	Conf, err = LoadConfig([]byte(TestConfig))
+	if err != nil {
+		fmt.Errorf(err.Error())
+	}
+
 	session, err = rdb.Connect(rdb.ConnectOpts{
-		Address:  os.Getenv("RETHINKDB_URL"),
+		Address:  Conf.Database.Host,
 		Database: "test",
 	})
 
@@ -31,8 +43,8 @@ func init() {
 	}
 
 	// Reset database
-	rdb.DbDrop(Database).Exec(session)
-	rdb.DbCreate(Database).Exec(session)
+	rdb.DbDrop(Conf.Database.Name).Exec(session)
+	rdb.DbCreate(Conf.Database.Name).Exec(session)
 }
 
 func TestIndexer_Stopper(t *testing.T) {
@@ -158,7 +170,7 @@ func TestIndexer_IndexPut(t *testing.T) {
 	err := index.Put(session)
 	assert.Nil(t, err)
 
-	res, err := rdb.Db(Database).Table(IndexTable).Get(index.ID).Run(session)
+	res, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Get(index.ID).Run(session)
 	assert.Nil(t, err)
 
 	var i Index
@@ -218,7 +230,7 @@ func TestIndexer_DocumentPut(t *testing.T) {
 	err := doc.Put(session)
 	assert.Nil(t, err)
 
-	res, err := rdb.Db(Database).Table(DocumentTable).Run(session)
+	res, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Run(session)
 	assert.Nil(t, err)
 
 	var d Document

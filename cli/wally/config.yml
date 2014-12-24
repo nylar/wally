@@ -1,0 +1,7 @@
+database:
+  host: localhost:28015
+  name: wally
+
+tables:
+  document_table: documents
+  index_table: indexes

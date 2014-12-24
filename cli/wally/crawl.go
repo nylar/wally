@@ -1,13 +1,11 @@
 package main
 
 import (
-	"log"
 	"strings"
 
 	"github.com/nylar/wally"
 
 	"github.com/codegangsta/cli"
-	"github.com/fatih/color"
 )
 
 func CrawlCommand() cli.Command {
@@ -34,9 +32,7 @@ func CrawlFunc(c *cli.Context) {
 
 	for _, u := range urls {
 		if err := wally.Crawler(u, session); err != nil {
-			color.Set(color.FgRed)
-			log.Fatalln(err.Error())
-			color.Unset()
+			logError(err)
 		}
 	}
 }

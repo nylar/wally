@@ -61,7 +61,7 @@ func TestSearch_Search(t *testing.T) {
 
 func TestSearch_SearchWithNoIndex(t *testing.T) {
 	DatabaseRebuild(session)
-	rdb.Db(Database).Table(IndexTable).IndexDrop("word").Exec(session)
+	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexDrop("word").Exec(session)
 
 	_, err := Search("hello", session)
 	assert.Error(t, err)

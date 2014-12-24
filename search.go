@@ -29,7 +29,7 @@ func Search(query string, session *rdb.Session) (*Results, error) {
 
 	r := new(Results)
 
-	results, err := rdb.Db(Database).Table(IndexTable).GetAllByIndex("word", rdb.Args(keys)).EqJoin("document_id", rdb.Db(Database).Table(DocumentTable)).Zip().OrderBy(rdb.Desc("count")).Run(session)
+	results, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).GetAllByIndex("word", rdb.Args(keys)).EqJoin("document_id", rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable)).Zip().OrderBy(rdb.Desc("count")).Run(session)
 	if err != nil {
 		return nil, err
 	}

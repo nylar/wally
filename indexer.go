@@ -187,15 +187,6 @@ var stopWords = map[string]bool{
 	"yourselves": true,
 }
 
-var (
-	// Database is the name of the database in RethinkDB
-	Database = "wally"
-	// DocumentTable is the name of the documents table in RethinkDB
-	DocumentTable = "documents"
-	// IndexTable is the name of the index table in RethinkDB
-	IndexTable = "indexes"
-)
-
 // Document holds data about a document, ID is usually populated with a UUID.
 type Document struct {
 	ID      string `gorethink:"id"`
@@ -216,7 +207,7 @@ func (d *Document) Put(session *rdb.Session) error {
 		d.ID = uuid.New()
 	}
 
-	res, _ := rdb.Db(Database).Table(DocumentTable).Insert(d).RunWrite(session)
+	res, _ := rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Insert(d).RunWrite(session)
 	if res.Errors > 0 {
 		return errors.New(res.FirstError)
 	}
@@ -241,7 +232,7 @@ func (i *Index) Put(session *rdb.Session) error {
 	if i.ID == "" {
 		i.ID = uuid.New()
 	}
-	res, _ := rdb.Db(Database).Table(IndexTable).Insert(i).RunWrite(session)
+	res, _ := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Insert(i).RunWrite(session)
 	if res.Errors > 0 {
 		return errors.New(res.FirstError)
 	}
@@ -251,8 +242,7 @@ func (i *Index) Put(session *rdb.Session) error {
 // IndexBatchPut writes one or more indexes in bulk to the database. indexes is
 // usually created by Indexer() so that each index is given an ID.
 func IndexBatchPut(session *rdb.Session, indexes []Index) error {
-	// FIXME: This call should be returning an error, instead it is returning nil.
-	res, _ := rdb.Db(Database).Table(IndexTable).Insert(indexes).RunWrite(session)
+	res, _ := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Insert(indexes).RunWrite(session)
 	if res.Errors > 0 {
 		return errors.New(res.FirstError)
 	}
