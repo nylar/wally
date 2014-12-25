@@ -5,7 +5,7 @@
 [![license](http://img.shields.io/badge/license-unlicense-red.svg "license")](https://raw.githubusercontent.com/nylar/wally/master/LICENSE)
 [![Coverage Status](https://coveralls.io/repos/nylar/wally/badge.png?branch=HEAD)](https://coveralls.io/r/nylar/wally?branch=HEAD)
 
-A full-text search engine built on Go.
+A full-text search engine built in Go.
 
 ## Getting Started with Wally
 
@@ -103,7 +103,7 @@ go get -u github.com/nylar/wally-ui
 Then to run the application, use go run. You can then fire up your browser and point it to [http://localhost:8008](http://localhost:8008).
 
 ```shell
-go run main.go",
+go run main.go
 ```
 Inside this directory you will find a config file that you modify to match your environment. If port 8008 is occupied on your machine, you can modify the main() function in main.go, like so.
 
