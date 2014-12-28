@@ -1,3 +1,6 @@
 package wally
 
-var Conf *Config
+var (
+	Conf         *Config
+	ItemsPerPage uint = 2
+)

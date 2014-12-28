@@ -7,6 +7,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var originalItemsPerPage = ItemsPerPage
+
+func setUp(pages uint) {
+	ItemsPerPage = pages
+}
+
+func tearDown() {
+	ItemsPerPage = originalItemsPerPage
+}
+
 func SearchSetup() error {
 	DatabaseRebuild(session)
 
@@ -49,20 +59,52 @@ func SearchSetup() error {
 }
 
 func TestSearch_Search(t *testing.T) {
+	setUp(1)
 	if err := SearchSetup(); err != nil {
 		t.Errorf(err.Error())
 	}
 
-	results, err := Search("example", session)
-	assert.NoError(t, err)
+	for i := 1; i < 3; i++ {
+		results, err := Search("example", session, i)
+		assert.NoError(t, err)
 
-	assert.Equal(t, len(results.Results), 2)
+		assert.Equal(t, len(results.Results), 1)
+	}
+	tearDown()
 }
 
 func TestSearch_SearchWithNoIndex(t *testing.T) {
 	DatabaseRebuild(session)
 	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexDrop("word").Exec(session)
 
-	_, err := Search("hello", session)
+	_, err := Search("hello", session, 1)
 	assert.Error(t, err)
+}
+
+func TestSearch_parsePageNumber(t *testing.T) {
+	tests := []struct {
+		input  int
+		output uint
+	}{
+		{
+			0,
+			1,
+		},
+		{
+			1,
+			1,
+		},
+		{
+			2,
+			2,
+		},
+		{
+			192983,
+			192983,
+		},
+	}
+
+	for _, test := range tests {
+		assert.Equal(t, parsePageNumber(test.input), test.output)
+	}
 }

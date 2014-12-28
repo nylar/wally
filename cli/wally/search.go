@@ -27,7 +27,7 @@ func SearchCommand() cli.Command {
 func SearchFunc(c *cli.Context) {
 	query := c.String("query")
 
-	results, err := wally.Search(query, session)
+	results, err := wally.Search(query, session, 1)
 	if err != nil {
 		logError(err)
 	}
