@@ -73,6 +73,31 @@ func TestSearch_Search(t *testing.T) {
 	tearDown()
 }
 
+func TestSearch_SearchNumberOfResults(t *testing.T) {
+	if err := SearchSetup(); err != nil {
+		t.Errorf(err.Error())
+	}
+
+	r := new(Results)
+	err := r.NumberOfResults([]string{"example"}, session)
+
+	assert.Equal(t, r.Count, 2)
+	assert.NoError(t, err)
+}
+
+func TestSearch_SearchNumberOfResultsNoIndex(t *testing.T) {
+	if err := SearchSetup(); err != nil {
+		t.Errorf(err.Error())
+	}
+	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexDrop("word").Exec(session)
+
+	r := new(Results)
+	err := r.NumberOfResults([]string{"example"}, session)
+
+	assert.Equal(t, r.Count, 0)
+	assert.Error(t, err)
+}
+
 func TestSearch_SearchWithNoIndex(t *testing.T) {
 	DatabaseRebuild(session)
 	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexDrop("word").Exec(session)

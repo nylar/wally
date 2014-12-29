@@ -20,6 +20,18 @@ type Results struct {
 	Time    float64
 }
 
+func (r *Results) NumberOfResults(keys []string, session *rdb.Session) error {
+	var count int
+	res, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).GetAllByIndex("word", rdb.Args(keys)).Count().Run(session)
+	if err != nil {
+		return err
+	}
+
+	res.One(&count)
+	r.Count = int64(count)
+	return nil
+}
+
 func parsePageNumber(page int) uint {
 	if page < 1 {
 		page = 1
@@ -48,7 +60,8 @@ func Search(query string, session *rdb.Session, currentPage int) (*Results, erro
 
 	results.All(&res)
 
-	r.Count = int64(len(res))
+	r.NumberOfResults(keys, session)
+
 	r.Results = res
 	t := time.Since(start).Seconds()
 	r.Time = t
