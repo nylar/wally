@@ -1,6 +1,7 @@
 package wally
 
 import (
+	"math"
 	"strings"
 	"time"
 
@@ -20,6 +21,36 @@ type Results struct {
 	Time    float64
 }
 
+type Pagination struct {
+	CurrentPage, PageCount       int
+	HasPreviousPage, HasNextPage bool
+}
+
+func (p *Pagination) NumberOfPages() int {
+	if p.PageCount == 0 {
+		return 1
+	}
+	count := float64(p.PageCount) / float64(ItemsPerPage)
+	pages := math.Ceil(count)
+	return int(pages)
+}
+
+func (p *Pagination) Previous() int {
+	if p.CurrentPage > 1 {
+		return p.CurrentPage - 1
+	}
+
+	return 1
+}
+
+func (p *Pagination) Next() int {
+	if p.CurrentPage < p.NumberOfPages() {
+		return p.CurrentPage + 1
+	}
+
+	return p.CurrentPage
+}
+
 func (r *Results) NumberOfResults(keys []string, session *rdb.Session) error {
 	var count int
 	res, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).GetAllByIndex("word", rdb.Args(keys)).Count().Run(session)
@@ -32,11 +63,11 @@ func (r *Results) NumberOfResults(keys []string, session *rdb.Session) error {
 	return nil
 }
 
-func parsePageNumber(page int) uint {
+func parsePageNumber(page int) int {
 	if page < 1 {
 		page = 1
 	}
-	return uint(page)
+	return int(page)
 }
 
 // Search returns a list of results along with the time taken to run and the

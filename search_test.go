@@ -9,7 +9,7 @@ import (
 
 var originalItemsPerPage = ItemsPerPage
 
-func setUp(pages uint) {
+func setUp(pages int) {
 	ItemsPerPage = pages
 }
 
@@ -109,7 +109,7 @@ func TestSearch_SearchWithNoIndex(t *testing.T) {
 func TestSearch_parsePageNumber(t *testing.T) {
 	tests := []struct {
 		input  int
-		output uint
+		output int
 	}{
 		{
 			0,
@@ -132,4 +132,91 @@ func TestSearch_parsePageNumber(t *testing.T) {
 	for _, test := range tests {
 		assert.Equal(t, parsePageNumber(test.input), test.output)
 	}
+}
+
+func TestSearch_PaginationNumberOfPages(t *testing.T) {
+	tests := []struct {
+		input  int
+		output int
+	}{
+		{
+			45,
+			5,
+		},
+		{
+			109,
+			11,
+		},
+		{
+			0,
+			1,
+		},
+		{
+			53,
+			6,
+		},
+	}
+
+	p := new(Pagination)
+
+	for _, test := range tests {
+		p.PageCount = test.input
+		assert.Equal(t, test.output, p.NumberOfPages())
+	}
+
+}
+
+func TestSearch_PaginationPrevious(t *testing.T) {
+	tests := []struct {
+		input  int
+		output int
+	}{
+		{
+			1,
+			1,
+		},
+		{
+			20,
+			19,
+		},
+		{
+			2,
+			1,
+		},
+	}
+
+	for _, test := range tests {
+		p := new(Pagination)
+		p.CurrentPage = test.input
+		assert.Equal(t, test.output, p.Previous())
+	}
+
+}
+
+func TestSearch_PaginationNext(t *testing.T) {
+	tests := []struct {
+		input  int
+		output int
+	}{
+		{
+			6,
+			6,
+		},
+		{
+			5,
+			6,
+		},
+		{
+			1,
+			2,
+		},
+	}
+
+	for _, test := range tests {
+		p := new(Pagination)
+		p.PageCount = 56
+		p.CurrentPage = test.input
+		assert.Equal(t, test.output, p.Next())
+	}
+
 }
