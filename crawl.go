@@ -8,8 +8,14 @@ import (
 	"github.com/nylar/odlaw"
 )
 
-func grabURL(url string) ([]byte, error) {
-	resp, err := http.Get(url)
+type Sourcer interface {
+	Grab(resource string) ([]byte, error)
+}
+
+type WebSource struct{}
+
+func (ws *WebSource) Grab(resource string) ([]byte, error) {
+	resp, err := http.Get(resource)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -20,10 +26,14 @@ func grabURL(url string) ([]byte, error) {
 	return data, nil
 }
 
+func GrabResource(source Sourcer, resource string) ([]byte, error) {
+	return source.Grab(resource)
+}
+
 // Crawler grabs the contents of a URL and passes the data to Odlaw for
 // processing, it is then written in bulk to the database.
-func Crawler(url string, session *rdb.Session) error {
-	data, err := grabURL(url)
+func Crawler(url string, session *rdb.Session, source Sourcer) error {
+	data, err := GrabResource(source, url)
 	if err != nil {
 		return err
 	}

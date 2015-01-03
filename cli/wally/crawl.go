@@ -31,7 +31,7 @@ func CrawlFunc(c *cli.Context) {
 	urls := strings.Split(url, "|")
 
 	for _, u := range urls {
-		if err := wally.Crawler(u, session); err != nil {
+		if err := wally.Crawler(u, session, &wally.WebSource{}); err != nil {
 			logError(err)
 		}
 	}
