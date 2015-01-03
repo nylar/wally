@@ -46,6 +46,7 @@ func init() {
 	// Reset database
 	rdb.DbDrop(Conf.Database.Name).Exec(session)
 	rdb.DbCreate(Conf.Database.Name).Exec(session)
+	DatabaseRebuild(session)
 }
 
 func TestIndexer_Stopper(t *testing.T) {
@@ -164,8 +165,6 @@ func TestIndexer_IndexString(t *testing.T) {
 }
 
 func TestIndexer_IndexPut(t *testing.T) {
-	DatabaseRebuild(session)
-
 	index := Index{Word: "hello", Count: 5, DocumentID: "12345-67890-ABCDE"}
 
 	err := index.Put(session)
@@ -185,7 +184,6 @@ func TestIndexer_IndexPut(t *testing.T) {
 }
 
 func TestIndexer_IndexPutInvalid(t *testing.T) {
-	DatabaseRebuild(session)
 
 	i := Index{ID: "1"}
 	i2 := Index{ID: "1"}
@@ -221,8 +219,6 @@ func TestIndexer_DocumentString(t *testing.T) {
 }
 
 func TestIndexer_DocumentPut(t *testing.T) {
-	DatabaseRebuild(session)
-
 	doc := Document{
 		Source:  "www.google.com",
 		Content: "Lorem ipsum dolor sit amet.",
@@ -244,8 +240,6 @@ func TestIndexer_DocumentPut(t *testing.T) {
 }
 
 func TestIndexer_DocumentPutDupeDocs(t *testing.T) {
-	DatabaseRebuild(session)
-
 	doc1 := Document{ID: "1"}
 	doc2 := Document{ID: "1"}
 

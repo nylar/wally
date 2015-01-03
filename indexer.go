@@ -187,6 +187,10 @@ var stopWords = map[string]bool{
 	"yourselves": true,
 }
 
+type Resource interface {
+	Put(session *rdb.Session) error
+}
+
 // Document holds data about a document, ID is usually populated with a UUID.
 type Document struct {
 	ID      string `gorethink:"id"`
