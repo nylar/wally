@@ -227,7 +227,7 @@ func TestIndexer_DocumentPut(t *testing.T) {
 	err := doc.Put(session)
 	assert.Nil(t, err)
 
-	res, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Run(session)
+	res, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Get(doc.ID).Run(session)
 	assert.Nil(t, err)
 
 	var d Document
