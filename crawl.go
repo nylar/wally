@@ -43,6 +43,6 @@ func Crawler(url string, session *rdb.Session) error {
 
 	indexes := Indexer(content, d.ID)
 
-	_, _ = rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Insert(indexes).RunWrite(session)
+	_ = IndexBatchPut(session, indexes)
 	return nil
 }
