@@ -44,8 +44,21 @@ func init() {
 	}
 
 	// Reset database
-	rdb.DbDrop(Conf.Database.Name).Exec(session)
 	rdb.DbCreate(Conf.Database.Name).Exec(session)
+	rdb.Db(Conf.Database.Name).TableCreate(Conf.Tables.DocumentTable).Exec(session)
+	rdb.Db(Conf.Database.Name).TableCreate(Conf.Tables.IndexTable).Exec(session)
+	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexCreate("word").Exec(session)
+}
+
+func tearDbDown(session *rdb.Session) {
+	rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Delete(rdb.DeleteOpts{
+		Durability:    "soft",
+		ReturnChanges: false,
+	}).Exec(session)
+	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Delete(rdb.DeleteOpts{
+		Durability:    "soft",
+		ReturnChanges: false,
+	}).Exec(session)
 }
 
 func TestIndexer_Stopper(t *testing.T) {
@@ -164,7 +177,7 @@ func TestIndexer_IndexString(t *testing.T) {
 }
 
 func TestIndexer_IndexPut(t *testing.T) {
-	DatabaseRebuild(session)
+	defer tearDbDown(session)
 
 	index := Index{Word: "hello", Count: 5, DocumentID: "12345-67890-ABCDE"}
 
@@ -185,7 +198,7 @@ func TestIndexer_IndexPut(t *testing.T) {
 }
 
 func TestIndexer_IndexPutInvalid(t *testing.T) {
-	DatabaseRebuild(session)
+	defer tearDbDown(session)
 
 	i := Index{ID: "1"}
 	i2 := Index{ID: "1"}
@@ -221,7 +234,7 @@ func TestIndexer_DocumentString(t *testing.T) {
 }
 
 func TestIndexer_DocumentPut(t *testing.T) {
-	DatabaseRebuild(session)
+	defer tearDbDown(session)
 
 	doc := Document{
 		Source:  "www.google.com",
@@ -244,7 +257,7 @@ func TestIndexer_DocumentPut(t *testing.T) {
 }
 
 func TestIndexer_DocumentPutDupeDocs(t *testing.T) {
-	DatabaseRebuild(session)
+	defer tearDbDown(session)
 
 	doc1 := Document{ID: "1"}
 	doc2 := Document{ID: "1"}

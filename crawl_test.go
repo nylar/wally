@@ -27,7 +27,7 @@ func TestCrawl_grabURL(t *testing.T) {
 }
 
 func TestCrawl_Crawler(t *testing.T) {
-	DatabaseRebuild(session)
+	defer tearDbDown(session)
 
 	data := []byte("really cool stuff")
 	ts := Handler(200, data)
@@ -38,7 +38,7 @@ func TestCrawl_Crawler(t *testing.T) {
 }
 
 func TestCrawl_CrawlerNoURL(t *testing.T) {
-	DatabaseRebuild(session)
+	defer tearDbDown(session)
 
 	err := Crawler("", session)
 	assert.Error(t, err)

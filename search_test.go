@@ -18,8 +18,6 @@ func tearDown() {
 }
 
 func SearchSetup() error {
-	DatabaseRebuild(session)
-
 	d1 := Document{
 		ID:      "1",
 		Source:  "http://example.com",
@@ -59,6 +57,8 @@ func SearchSetup() error {
 }
 
 func TestSearch_Search(t *testing.T) {
+	defer tearDbDown(session)
+
 	setUp(1)
 	if err := SearchSetup(); err != nil {
 		t.Errorf(err.Error())
@@ -74,6 +74,8 @@ func TestSearch_Search(t *testing.T) {
 }
 
 func TestSearch_SearchNumberOfResults(t *testing.T) {
+	defer tearDbDown(session)
+
 	if err := SearchSetup(); err != nil {
 		t.Errorf(err.Error())
 	}
@@ -99,7 +101,8 @@ func TestSearch_SearchNumberOfResultsNoIndex(t *testing.T) {
 }
 
 func TestSearch_SearchWithNoIndex(t *testing.T) {
-	DatabaseRebuild(session)
+	defer tearDbDown(session)
+
 	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexDrop("word").Exec(session)
 
 	_, err := Search("hello", session, 1)
