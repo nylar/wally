@@ -33,12 +33,11 @@ func Crawler(url string, session *rdb.Session) error {
 	author := odlaw.ExtractAuthor(doc)
 	content := odlaw.ExtractText(doc)
 
-	d := Document{
-		Source:  url,
-		Title:   title,
-		Author:  author,
-		Content: content,
-	}
+	d := NewDocument(url)
+	d.Title = title
+	d.Author = author
+	d.Content = content
+
 	_ = d.Put(session)
 
 	indexes := Indexer(content, d.ID)

@@ -19,16 +19,14 @@ func tearDown() {
 
 func SearchSetup() error {
 	d1 := Document{
-		ID:      "1",
-		Source:  "http://example.com",
+		ID:      "http://example.com",
 		Title:   "Examples, Examples Everywhere",
 		Author:  "John Johnson",
 		Content: "This is an example of some example content remember though it's just an example",
 	}
 
 	d2 := Document{
-		ID:      "2",
-		Source:  "http://example.org",
+		ID:      "http://example.org",
 		Title:   "Help Abandoned Examples",
 		Author:  "",
 		Content: "Save the example",

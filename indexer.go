@@ -6,7 +6,6 @@ import (
 	"strings"
 	"sync"
 
-	"code.google.com/p/go-uuid/uuid"
 	rdb "github.com/dancannon/gorethink"
 )
 
@@ -190,7 +189,6 @@ var stopWords = map[string]bool{
 // Document holds data about a document, ID is usually populated with a UUID.
 type Document struct {
 	ID      string `gorethink:"id"`
-	Source  string `gorethink:"source"`
 	Title   string `gorethink:"title"`
 	Author  string `gorethink:"author"`
 	Content string `gorethink:"content"`
@@ -203,10 +201,6 @@ func (d *Document) String() string {
 // Put writes a single document to the database, if an ID isn't set
 // then one is set as a UUID.
 func (d *Document) Put(session *rdb.Session) error {
-	if d.ID == "" {
-		d.ID = uuid.New()
-	}
-
 	res, _ := rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Insert(d).RunWrite(session)
 	if res.Errors > 0 {
 		return errors.New(res.FirstError)
@@ -222,6 +216,11 @@ type Index struct {
 	DocumentID string `gorethink:"document_id"`
 }
 
+func (i *Index) GenerateID() {
+	i.ID = fmt.Sprintf("%s::%s", i.DocumentID, i.Word)
+	return
+}
+
 func (i *Index) String() string {
 	return fmt.Sprintf("Index#%s", i.ID)
 }
@@ -230,7 +229,7 @@ func (i *Index) String() string {
 // is set as a UUID.
 func (i *Index) Put(session *rdb.Session) error {
 	if i.ID == "" {
-		i.ID = uuid.New()
+		i.GenerateID()
 	}
 	res, _ := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Insert(i).RunWrite(session)
 	if res.Errors > 0 {
@@ -320,11 +319,9 @@ func Indexer(text interface{}, documentID string) []Index {
 			// Apply stemming
 
 			// Append to normalised word list
-			normalisedWords = append(normalisedWords, Index{
-				ID:         uuid.New(),
-				Word:       word,
-				DocumentID: documentID,
-			})
+			index := NewIndex(word, documentID)
+			index.GenerateID()
+			normalisedWords = append(normalisedWords, *index)
 		}(word)
 	}
 

@@ -191,7 +191,7 @@ func TestIndexer_IndexPut(t *testing.T) {
 	err = res.One(&i)
 	assert.Nil(t, err)
 
-	assert.NotEqual(t, i.ID, "")
+	assert.Equal(t, i.ID, "12345-67890-ABCDE::hello")
 	assert.Equal(t, i.Word, "hello")
 	assert.Equal(t, i.Count, 5)
 	assert.Equal(t, i.DocumentID, "12345-67890-ABCDE")
@@ -237,7 +237,7 @@ func TestIndexer_DocumentPut(t *testing.T) {
 	defer tearDbDown(session)
 
 	doc := Document{
-		Source:  "www.google.com",
+		ID:      "www.google.com",
 		Content: "Lorem ipsum dolor sit amet.",
 	}
 
@@ -251,8 +251,7 @@ func TestIndexer_DocumentPut(t *testing.T) {
 	err = res.One(&d)
 	assert.Nil(t, err)
 
-	assert.NotEqual(t, d.ID, "")
-	assert.Equal(t, d.Source, "www.google.com")
+	assert.Equal(t, d.ID, "www.google.com")
 	assert.Equal(t, d.Content, "Lorem ipsum dolor sit amet.")
 }
 

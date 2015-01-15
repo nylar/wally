@@ -40,9 +40,9 @@ func SearchFunc(c *cli.Context) {
 			content := r.Content
 			if r.Title != "" {
 				wally.Info.Printf("\n%s", r.Title)
-				wally.Success.Printf("\n%s\n", r.Source)
+				wally.Success.Printf("\n%s\n", r.Document.ID)
 			} else {
-				wally.Success.Printf("\n%s\n", r.Source)
+				wally.Success.Printf("\n%s\n", r.Document.ID)
 			}
 			if len(r.Content) > 150 {
 				content = r.Content[:150] + " ..."
