@@ -201,7 +201,7 @@ func (d *Document) String() string {
 // Put writes a single document to the database, if an ID isn't set
 // then one is set as a UUID.
 func (d *Document) Put(session *rdb.Session) error {
-	res, _ := rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Insert(d).RunWrite(session)
+	res, _ := rdb.DB(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Insert(d).RunWrite(session)
 	if res.Errors > 0 {
 		return errors.New(res.FirstError)
 	}
@@ -231,7 +231,7 @@ func (i *Index) Put(session *rdb.Session) error {
 	if i.ID == "" {
 		i.GenerateID()
 	}
-	res, _ := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Insert(i).RunWrite(session)
+	res, _ := rdb.DB(Conf.Database.Name).Table(Conf.Tables.IndexTable).Insert(i).RunWrite(session)
 	if res.Errors > 0 {
 		return errors.New(res.FirstError)
 	}
@@ -241,7 +241,7 @@ func (i *Index) Put(session *rdb.Session) error {
 // IndexBatchPut writes one or more indexes in bulk to the database. indexes is
 // usually created by Indexer() so that each index is given an ID.
 func IndexBatchPut(session *rdb.Session, indexes []Index) error {
-	res, _ := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Insert(indexes).RunWrite(session)
+	res, _ := rdb.DB(Conf.Database.Name).Table(Conf.Tables.IndexTable).Insert(indexes).RunWrite(session)
 	if res.Errors > 0 {
 		return errors.New(res.FirstError)
 	}

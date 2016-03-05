@@ -44,18 +44,18 @@ func init() {
 	}
 
 	// Reset database
-	rdb.DbCreate(Conf.Database.Name).Exec(session)
-	rdb.Db(Conf.Database.Name).TableCreate(Conf.Tables.DocumentTable).Exec(session)
-	rdb.Db(Conf.Database.Name).TableCreate(Conf.Tables.IndexTable).Exec(session)
-	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexCreate("word").Exec(session)
+	rdb.DBCreate(Conf.Database.Name).Exec(session)
+	rdb.DB(Conf.Database.Name).TableCreate(Conf.Tables.DocumentTable).Exec(session)
+	rdb.DB(Conf.Database.Name).TableCreate(Conf.Tables.IndexTable).Exec(session)
+	rdb.DB(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexCreate("word").Exec(session)
 }
 
 func tearDbDown(session *rdb.Session) {
-	rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Delete(rdb.DeleteOpts{
+	rdb.DB(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Delete(rdb.DeleteOpts{
 		Durability:    "soft",
 		ReturnChanges: false,
 	}).Exec(session)
-	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Delete(rdb.DeleteOpts{
+	rdb.DB(Conf.Database.Name).Table(Conf.Tables.IndexTable).Delete(rdb.DeleteOpts{
 		Durability:    "soft",
 		ReturnChanges: false,
 	}).Exec(session)
@@ -184,7 +184,7 @@ func TestIndexer_IndexPut(t *testing.T) {
 	err := index.Put(session)
 	assert.Nil(t, err)
 
-	res, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Get(index.ID).Run(session)
+	res, err := rdb.DB(Conf.Database.Name).Table(Conf.Tables.IndexTable).Get(index.ID).Run(session)
 	assert.Nil(t, err)
 
 	var i Index
@@ -193,7 +193,7 @@ func TestIndexer_IndexPut(t *testing.T) {
 
 	assert.Equal(t, i.ID, "12345-67890-ABCDE::hello")
 	assert.Equal(t, i.Word, "hello")
-	assert.Equal(t, i.Count, 5)
+	assert.Equal(t, i.Count, int64(5))
 	assert.Equal(t, i.DocumentID, "12345-67890-ABCDE")
 }
 
@@ -244,7 +244,7 @@ func TestIndexer_DocumentPut(t *testing.T) {
 	err := doc.Put(session)
 	assert.Nil(t, err)
 
-	res, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Run(session)
+	res, err := rdb.DB(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Run(session)
 	assert.Nil(t, err)
 
 	var d Document

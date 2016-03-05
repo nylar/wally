@@ -22,14 +22,14 @@ var (
 // DatabaseRebuild resets the database to an empty state, it also sets the
 // secondary index for the index table.
 func DatabaseRebuild(session *rdb.Session) {
-	rdb.Db(Conf.Database.Name).TableCreate(Conf.Tables.DocumentTable).Exec(session)
-	rdb.Db(Conf.Database.Name).TableCreate(Conf.Tables.IndexTable).Exec(session)
-	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexCreate("word").Exec(session)
-	rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Delete(rdb.DeleteOpts{
+	rdb.DB(Conf.Database.Name).TableCreate(Conf.Tables.DocumentTable).Exec(session)
+	rdb.DB(Conf.Database.Name).TableCreate(Conf.Tables.IndexTable).Exec(session)
+	rdb.DB(Conf.Database.Name).Table(Conf.Tables.IndexTable).IndexCreate("word").Exec(session)
+	rdb.DB(Conf.Database.Name).Table(Conf.Tables.DocumentTable).Delete(rdb.DeleteOpts{
 		Durability:    "soft",
 		ReturnChanges: false,
 	}).Exec(session)
-	rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).Delete(rdb.DeleteOpts{
+	rdb.DB(Conf.Database.Name).Table(Conf.Tables.IndexTable).Delete(rdb.DeleteOpts{
 		Durability:    "soft",
 		ReturnChanges: false,
 	}).Exec(session)

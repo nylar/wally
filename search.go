@@ -22,7 +22,7 @@ type Results struct {
 
 func (r *Results) NumberOfResults(keys []string, session *rdb.Session) error {
 	var count int
-	res, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).GetAllByIndex("word", rdb.Args(keys)).Count().Run(session)
+	res, err := rdb.DB(Conf.Database.Name).Table(Conf.Tables.IndexTable).GetAllByIndex("word", rdb.Args(keys)).Count().Run(session)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func Search(query string, session *rdb.Session, currentPage int) (*Results, erro
 	lower := (page - 1) * ItemsPerPage
 	upper := page * ItemsPerPage
 
-	results, err := rdb.Db(Conf.Database.Name).Table(Conf.Tables.IndexTable).GetAllByIndex("word", rdb.Args(keys)).EqJoin("document_id", rdb.Db(Conf.Database.Name).Table(Conf.Tables.DocumentTable)).Zip().OrderBy(rdb.Desc("count")).Slice(lower, upper).Run(session)
+	results, err := rdb.DB(Conf.Database.Name).Table(Conf.Tables.IndexTable).GetAllByIndex("word", rdb.Args(keys)).EqJoin("document_id", rdb.DB(Conf.Database.Name).Table(Conf.Tables.DocumentTable)).Zip().OrderBy(rdb.Desc("count")).Slice(lower, upper).Run(session)
 	if err != nil {
 		return nil, err
 	}
